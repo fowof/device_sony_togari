@@ -32,8 +32,8 @@ bin/chargemon
 
 # Sensors
 bin/sensors.qcom
-etc/sensor_def_qcomdev.conf
-etc/sensors_calib.conf
+# etc/sensor_def_qcomdev.conf
+# etc/sensors_calib.conf
 vendor/lib/libsensor1.so
 
 # TA

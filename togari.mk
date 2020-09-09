@@ -41,7 +41,8 @@ PRODUCT_COPY_FILES += \
 
 # Sensors
 PRODUCT_COPY_FILES += \
-   $(LOCAL_PATH)/configs/sensor_def_qcomdev.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_def_qcomdev.conf
+   $(LOCAL_PATH)/configs/sensor_def_qcomdev.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_def_qcomdev.conf \
+	 $(LOCAL_PATH)/configs/sensors_calib.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensors_calib.conf
 
 # Thermal manager
 PRODUCT_COPY_FILES += \
