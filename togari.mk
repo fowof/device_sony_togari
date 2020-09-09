@@ -28,12 +28,12 @@ PRODUCT_COPY_FILES += \
 # currently contain all of the bitmaps at xhdpi density so
 # we do this little trick to fall back to the hdpi version
 # if the xhdpi doesn't exist.
-PRODUCT_AAPT_CONFIG := large
+PRODUCT_AAPT_CONFIG      := large
 PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
 # Device specific init
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/init.device.rc:root/init.device.rc
+    $(LOCAL_PATH)/rootdir/init.device.rc:$(TARGET_COPY_OUT_ROOT)/init.device.rc
 
 # Audio
 PRODUCT_COPY_FILES += \
@@ -41,7 +41,7 @@ PRODUCT_COPY_FILES += \
 
 # Sensors
 PRODUCT_COPY_FILES += \
-   $(LOCAL_PATH)/configs/sensor_def_qcomdev.conf:system/etc/sensor_def_qcomdev.conf
+   $(LOCAL_PATH)/configs/sensor_def_qcomdev.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_def_qcomdev.conf
 
 # Thermal manager
 PRODUCT_COPY_FILES += \
