@@ -4,13 +4,6 @@
 
 Minimal tree to build TWRP
 
-## Compile
-
-    export ALLOW_MISSING_DEPENDENCIES=true
-    . build/envsetup.sh
-    lunch omni_togari-eng
-    mka adbd recoveryimage
-
 ## Device specifications
 
 Basic   | Spec Sheet
