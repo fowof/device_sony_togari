@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Boot animation
 TARGET_SCREEN_HEIGHT := 1920
 TARGET_SCREEN_WIDTH  := 1080
 
@@ -27,7 +28,7 @@ $(call inherit-product, device/sony/togari/togari.mk)
 
 # Set those variables here to overwrite the inherited values.
 # PRODUCT_NAME := full_togari
-# PRODUCT_DEVICE := togari
 PRODUCT_BRAND        := Sony
 PRODUCT_MANUFACTURER := Sony
 PRODUCT_MODEL        := Xperia Z Ultra
+PRODUCT_DEVICE       := togari
