@@ -28,6 +28,8 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/bluetooth
 # Kernel properties
 TARGET_KERNEL_CONFIG := lineageos_rhine_togari_row_defconfig
 
+BOARD_KERNEL_CMDLINE += mem=1759M
+
 # Partition information
 BOARD_VOLD_MAX_PARTITIONS := 26
 
