@@ -14,10 +14,10 @@ ro.semc.product.model=C6833
 
 ro.semc.ms_type_id=PM-0410-BV
 
-ro.semc.version.cust=1275-8026
-ro.semc.version.cust_revision=R2D
-ro.semc.version.fs=EURO-LTE
+ro.semc.version.cust=1274-8613
+ro.semc.version.cust_revision=R7D
+ro.semc.version.fs=GLOBAL-LTE
 
-# ro.semc.version.cust=1274-8613
-# ro.semc.version.cust_revision=R7D
-# ro.semc.version.fs=GLOBAL-LTE
+# ro.semc.version.cust=1275-8026
+# ro.semc.version.cust_revision=R2D
+# ro.semc.version.fs=EURO-LTE
