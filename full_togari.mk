@@ -27,8 +27,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, device/sony/togari/togari.mk)
 
 # Set those variables here to overwrite the inherited values.
-# PRODUCT_NAME := full_togari
 PRODUCT_BRAND        := Sony
 PRODUCT_MANUFACTURER := Sony
 PRODUCT_MODEL        := Xperia Z Ultra
 PRODUCT_DEVICE       := togari
+# PRODUCT_NAME := full_togari
