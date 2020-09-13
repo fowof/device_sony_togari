@@ -31,4 +31,3 @@ PRODUCT_BRAND        := Sony
 PRODUCT_MANUFACTURER := Sony
 PRODUCT_MODEL        := Xperia Z Ultra
 PRODUCT_DEVICE       := togari
-# PRODUCT_NAME := full_togari
