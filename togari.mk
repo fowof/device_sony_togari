@@ -103,5 +103,9 @@ PRODUCT_COPY_FILES += \
 	 $(LOCAL_VENDOR_SONY_TOGARI)/etc/firmware/mba.b00:$(TARGET_COPY_OUT_SYSTEM)/etc/firmware/mba.b00 \
 	 $(LOCAL_VENDOR_SONY_TOGARI)/etc/firmware/mba.mdt:$(TARGET_COPY_OUT_SYSTEM)/etc/firmware/mba.mdt
 
+# Bootlogo
+PRODUCT_COPY_FILES += \
+	$(LOCAL_VENDOR_SONY_TOGARI)/logo.rle:$(TARGET_COPY_OUT_ROOT)/logo.rle
+
 undefine LOCAL_VENDOR_SONY_RHINE_COMMON
 undefine LOCAL_VENDOR_SONY_TOGARI
