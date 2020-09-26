@@ -37,17 +37,17 @@ PRODUCT_COPY_FILES += \
 
 # Audio
 PRODUCT_COPY_FILES += \
-   $(LOCAL_PATH)/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml
+   $(LOCAL_PATH)/rootdir/system/etc/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml
 
 # Sensors
 PRODUCT_COPY_FILES += \
-   $(LOCAL_PATH)/configs/sensor_def_qcomdev.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_def_qcomdev.conf \
-	 $(LOCAL_PATH)/configs/sensor_calib.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_calib.conf
+   $(LOCAL_PATH)/rootdir/system/etc/sensors/sensor_def_qcomdev.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_def_qcomdev.conf \
+	 $(LOCAL_PATH)/rootdir/system/etc/sensors/sensor_calib.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_calib.conf
 
 
 # Thermal manager
 PRODUCT_COPY_FILES += \
-   $(LOCAL_PATH)/configs/thermanager.xml:$(TARGET_COPY_OUT_VENDOR)/etc/thermanager.xml
+   $(LOCAL_PATH)/rootdir/system/etc/thermanager.xml:$(TARGET_COPY_OUT_VENDOR)/etc/thermanager.xml
 
 # call dalvik heap config
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
