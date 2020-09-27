@@ -48,6 +48,11 @@
 # ************************************************
 # NEWER CLEAN STEPS MUST BE AT THE END OF THE LIST
 # ************************************************
+
+# msm8974-common
+$(call add-clean-step, find $(PRODUCT_OUT) -name "*lights.qcom.so" -print0 | xargs -0 rm -rf)
+
+# rhine
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/etc/vold.fstab)
 $(call add-clean-step, find $(OUT_DIR) -name "lights.msm8960*" -print0 | xargs -0 rm -f)
 $(call add-clean-step, find $(OUT_DIR) -name "*.default.*so" -print0 | xargs -0 rm -f)

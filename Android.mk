@@ -12,7 +12,11 @@ ifeq ($(BOARD_VENDOR_PLATFORM),rhine)
         $(TARGET_OUT_ETC)/firmware/wcd9320/wcd9320_mbhc.bin)
 endif
 
+ifeq ($(BOARD_VENDOR),sony)
+ifeq ($(TARGET_BOARD_PLATFORM),msm8974)
 ifeq ($(TARGET_DEVICE),togari)
 #  include $(call first-makefiles-under,$(LOCAL_PATH))
 	include $(call all-subdir-makefiles)
+endif
+endif
 endif
