@@ -18,7 +18,8 @@
 #define __INIT_BOARD_H__
 
 #include "init_board_common.h"
-#include <init_sony/init_board_device.h>
+// #include <init_sony/init_board_device.h>
+#include "init_board_device.h"
 #include "init_prototypes.h"
 
 // Constants: devices controls
