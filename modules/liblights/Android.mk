@@ -15,11 +15,10 @@
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := lights.c
-LOCAL_SHARED_LIBRARIES := liblog
-LOCAL_MODULE := lights.msm8974
-LOCAL_MODULE_TAGS := optional
+LOCAL_SRC_FILES            := lights.c
+LOCAL_SHARED_LIBRARIES     := liblog
+LOCAL_MODULE               := lights.msm8974
+LOCAL_MODULE_TAGS          := optional
 LOCAL_MODULE_RELATIVE_PATH := hw
-LOCAL_PROPRIETARY_MODULE := true
+LOCAL_PROPRIETARY_MODULE   := true
 include $(BUILD_SHARED_LIBRARY)
-

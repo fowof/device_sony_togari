@@ -36,9 +36,9 @@
 
 #include "sony_lights.h"
 
-#define LED_RED_PATH "/sys/class/leds/led:rgb_red/"
+#define LED_RED_PATH   "/sys/class/leds/led:rgb_red/"
 #define LED_GREEN_PATH "/sys/class/leds/led:rgb_green/"
-#define LED_BLUE_PATH "/sys/class/leds/led:rgb_blue/"
+#define LED_BLUE_PATH  "/sys/class/leds/led:rgb_blue/"
 
 static pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -65,26 +65,26 @@ static struct led_desc {
 	const char *step;
 } led_descs[] = {
 	[LED_BACKLIGHT] = {
-		.brightness = LED_BACKLIGHT_PATH "brightness",
+		.brightness     = LED_BACKLIGHT_PATH "brightness",
 		.max_brightness = LED_BACKLIGHT_PATH "max_brightness",
 	},
 	[LED_RED] = {
-		.brightness = LED_RED_PATH "brightness",
+		.brightness     = LED_RED_PATH "brightness",
 		.max_brightness = LED_RED_PATH "max_brightness",
-		.pwm = LED_RED_PATH "lut_pwm",
-		.step = LED_RED_PATH "step_duration",
+		.pwm            = LED_RED_PATH "lut_pwm",
+		.step           = LED_RED_PATH "step_duration",
 	},
 	[LED_GREEN] = {
-		.brightness = LED_GREEN_PATH "brightness",
+		.brightness     = LED_GREEN_PATH "brightness",
 		.max_brightness = LED_GREEN_PATH "max_brightness",
-		.pwm = LED_GREEN_PATH "lut_pwm",
-		.step = LED_GREEN_PATH "step_duration",
+		.pwm            = LED_GREEN_PATH "lut_pwm",
+		.step           = LED_GREEN_PATH "step_duration",
 	},
 	[LED_BLUE] = {
-		.brightness = LED_BLUE_PATH "brightness",
+		.brightness     = LED_BLUE_PATH "brightness",
 		.max_brightness = LED_BLUE_PATH "max_brightness",
-		.pwm = LED_BLUE_PATH "lut_pwm",
-		.step = LED_BLUE_PATH "step_duration",
+		.pwm            = LED_BLUE_PATH "lut_pwm",
+		.step           = LED_BLUE_PATH "step_duration",
 	},
 };
 
