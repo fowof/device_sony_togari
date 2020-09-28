@@ -16,20 +16,20 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES          := signal.c
-LOCAL_MODULE             := libshims_signal
-LOCAL_SHARED_LIBRARIES   := libc
-LOCAL_MODULE_TAGS        := optional
-LOCAL_32_BIT_ONLY        := true
-LOCAL_PROPRIETARY_MODULE := true
+LOCAL_SRC_FILES              := signal.c
+LOCAL_MODULE                 := libshims_signal
+LOCAL_SHARED_LIBRARIES       := libc
+LOCAL_MODULE_TAGS            := optional
+LOCAL_32_BIT_ONLY            := true
+LOCAL_PROPRIETARY_MODULE     := true
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES          := idd.c
-LOCAL_MODULE             := libshims_idd
-LOCAL_MODULE_TAGS        := optional
-LOCAL_32_BIT_ONLY        := true
-LOCAL_PROPRIETARY_MODULE := true
+LOCAL_SRC_FILES              := idd.c
+LOCAL_MODULE                 := libshims_idd
+LOCAL_MODULE_TAGS            := optional
+LOCAL_32_BIT_ONLY            := true
+LOCAL_PROPRIETARY_MODULE     := true
 include $(BUILD_SHARED_LIBRARY)
 
 # libshim_cald
@@ -81,8 +81,8 @@ LOCAL_SHARED_LIBRARIES := \
     libui \
     libsync \
     libutils
-LOCAL_MODULE := libshim_camera
-LOCAL_PROPRIETARY_MODULE := true
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE_CLASS := SHARED_LIBRARIES
+LOCAL_MODULE                 := libshim_camera
+LOCAL_PROPRIETARY_MODULE     := true
+LOCAL_MODULE_TAGS            := optional
+LOCAL_MODULE_CLASS           := SHARED_LIBRARIES
 include $(BUILD_SHARED_LIBRARY)
