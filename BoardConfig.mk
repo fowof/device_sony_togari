@@ -25,7 +25,7 @@ BUILD_BROKEN_DUP_RULES := true
 TARGET_USE_SDCLANG := true
 
 # Include path
-TARGET_SPECIFIC_HEADER_PATH += device/sony/msm8974-common/include
+TARGET_SPECIFIC_HEADER_PATH += device/sony/togari/include
 
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
@@ -36,13 +36,13 @@ ifeq (,$(filter $(TARGET_KERNEL_SOURCE),))
 endif
 
 # use CAF variants
-BOARD_USES_QCOM_HARDWARE := true
-TARGET_USES_QCOM_BSP := true
+BOARD_USES_QCOM_HARDWARE  := true
+TARGET_USES_QCOM_BSP      := true
 TARGET_QCOM_MEDIA_VARIANT := caf-msm8974
 
 # Platform
 TARGET_BOOTLOADER_BOARD_NAME := MSM8974
-TARGET_BOARD_PLATFORM := msm8974
+TARGET_BOARD_PLATFORM        := msm8974
 
 # Architecture
 TARGET_ARCH                := arm
@@ -109,14 +109,14 @@ TARGET_NO_RPC := true
 TARGET_FS_CONFIG_GEN += $(COMMON_PATH)/config.fs
 
 # Graphics
-USE_OPENGL_RENDERER := true
-TARGET_USES_ION := true
-NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
-OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
-TARGET_USES_GRALLOC1_ADAPTER := true
+USE_OPENGL_RENDERER                     := true
+TARGET_USES_ION                         := true
+NUM_FRAMEBUFFER_SURFACE_BUFFERS         := 3
+OVERRIDE_RS_DRIVER                      := libRSDriver_adreno.so
+TARGET_USES_GRALLOC1_ADAPTER            := true
 TARGET_ADDITIONAL_GRALLOC_10_USAGE_BITS := 0x02000000U
-SF_VSYNC_EVENT_PHASE_OFFSET_NS := 5000000
-VSYNC_EVENT_PHASE_OFFSET_NS := 7500000
+SF_VSYNC_EVENT_PHASE_OFFSET_NS          := 5000000
+VSYNC_EVENT_PHASE_OFFSET_NS             := 7500000
 
 # Shader cache config options
 # Maximum size of the  GLES Shaders that can be cached for reuse.
@@ -147,7 +147,7 @@ BOARD_SEPOLICY_DIRS += \
     device/sony/msm8974-common/sepolicy
 
 # Treble
-DEVICE_MANIFEST_FILE := device/sony/msm8974-common/treble-manifest.xml
+DEVICE_MANIFEST_FILE := device/sony/togari/treble-manifest.xml
 
 
 ##############
@@ -168,35 +168,44 @@ DEVICE_MANIFEST_FILE := device/sony/msm8974-common/treble-manifest.xml
 
 
 
-TARGET_SPECIFIC_HEADER_PATH += device/sony/rhine-common/include
-
 # Platform
 BOARD_VENDOR_PLATFORM := rhine
-PRODUCT_PLATFORM := rhine
+PRODUCT_PLATFORM      := rhine
 
 # Kernel information
 BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_BASE     := 0x00000000
 BOARD_KERNEL_PAGESIZE := 2048
-BOARD_KERNEL_CMDLINE  := androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3b7 ehci-hcd.park=3 androidboot.bootdevice=msm_sdcc.1 vmalloc=300M dwc3.maximum_speed=high dwc3_msm.prop_chg_detect=Y
+BOARD_KERNEL_CMDLINE  := androidboot.hardware=qcom
+BOARD_KERNEL_CMDLINE  += user_debug=31
+BOARD_KERNEL_CMDLINE  += msm_rtb.filter=0x3b7
+BOARD_KERNEL_CMDLINE  += ehci-hcd.park=3
+BOARD_KERNEL_CMDLINE  += androidboot.bootdevice=msm_sdcc.1
+BOARD_KERNEL_CMDLINE  += vmalloc=300M
+BOARD_KERNEL_CMDLINE  += dwc3.maximum_speed=high
+BOARD_KERNEL_CMDLINE  += dwc3_msm.prop_chg_detect=Y
+BOARD_KERNEL_CMDLINE  += mem=1759M
+
 #BOARD_KERNEL_CMDLINE  += androidboot.selinux=permissive
-BOARD_MKBOOTIMG_ARGS  := --ramdisk_offset 0x02000000 --tags_offset 0x01E00000
+BOARD_MKBOOTIMG_ARGS  := --ramdisk_offset 0x02000000
+BOARD_MKBOOTIMG_ARGS  += --tags_offset 0x01E00000
+
 BOARD_KERNEL_SEPARATED_DT := true
 
 # ANT+
 BOARD_ANT_WIRELESS_DEVICE := "qualcomm-smd"
 
 # Audio
-BOARD_USES_ALSA_AUDIO := true
-USE_LEGACY_LOCAL_AUDIO_HAL := true
+BOARD_USES_ALSA_AUDIO              := true
+USE_LEGACY_LOCAL_AUDIO_HAL         := true
 AUDIO_FEATURE_ENABLED_FM_POWER_OPT := true
-USE_XML_AUDIO_POLICY_CONF := 1
-USE_CUSTOM_AUDIO_POLICY := 1
+USE_XML_AUDIO_POLICY_CONF          := 1
+USE_CUSTOM_AUDIO_POLICY            := 1
 
 # Bluetooth
-BOARD_HAVE_BLUETOOTH := true
+BOARD_HAVE_BLUETOOTH      := true
 BOARD_HAVE_BLUETOOTH_QCOM := true
-BLUETOOTH_HCI_USE_MCT := true
+BLUETOOTH_HCI_USE_MCT     := true
 
 # CM Hardware
 BOARD_HARDWARE_CLASS += device/sony/rhine-common/lineagehw
@@ -266,13 +275,13 @@ TARGET_USERIMAGES_USE_EXT4       := true
 TARGET_USERIMAGES_USE_F2FS       := true
 
 # Recovery
-TARGET_RECOVERY_FSTAB := device/sony/rhine-common/rootdir/fstab.full
-TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-BOARD_HAS_NO_SELECT_BUTTON := true
+TARGET_RECOVERY_FSTAB          := device/sony/togari/rootdir/fstab.full
+TARGET_RECOVERY_PIXEL_FORMAT   := "RGBX_8888"
+BOARD_HAS_NO_SELECT_BUTTON     := true
 BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_23x41.h\"
 
 # Releasetools
-TARGET_RELEASETOOLS_EXTENSIONS := device/sony/rhine-common
+TARGET_RELEASETOOLS_EXTENSIONS := device/sony/togari
 
 # Binder API version
 TARGET_USES_64_BIT_BINDER := true
@@ -287,14 +296,13 @@ TARGET_USES_64_BIT_BINDER := true
 # Assert
 TARGET_OTA_ASSERT_DEVICE := C6802,C6806,C6833,C6843,togari
 
-TARGET_SPECIFIC_HEADER_PATH += device/sony/togari/include
 
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/bluetooth
 
 # Kernel properties
 TARGET_KERNEL_CONFIG := lineageos_rhine_togari_row_defconfig
 
-BOARD_KERNEL_CMDLINE += mem=1759M
+
 
 # Partition information
 BOARD_VOLD_MAX_PARTITIONS := 26
