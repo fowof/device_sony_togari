@@ -29,5 +29,6 @@ $(call inherit-product, device/sony/togari/togari.mk)
 # Set those variables here to overwrite the inherited values.
 PRODUCT_BRAND        := Sony
 PRODUCT_MANUFACTURER := Sony
-PRODUCT_MODEL        := Xperia Z Ultra
+PRODUCT_PLATFORM     := rhine
 PRODUCT_DEVICE       := togari
+PRODUCT_MODEL        := Xperia Z Ultra
