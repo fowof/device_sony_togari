@@ -17,7 +17,8 @@
 # include device/sony/msm8974-common/BoardConfigCommon.mk
 
 
-BOARD_VENDOR := sony
+BOARD_VENDOR          := sony
+BOARD_VENDOR_PLATFORM := rhine
 
 BUILD_BROKEN_DUP_RULES := true
 
@@ -29,6 +30,8 @@ TARGET_SPECIFIC_HEADER_PATH += device/sony/togari/include
 
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
+# TARGET_NO_RECOVERY   := false # from n-mr0
+# TARGET_NO_KERNEL     := false # from n-mr0
 
 # Kernel properties
 ifeq (,$(filter $(TARGET_KERNEL_SOURCE),))
@@ -57,32 +60,38 @@ TARGET_CUSTOM_DTBTOOL      := dtbToolLineage
 # -include $(PLATFORM_PATH)/hardware/*/BoardConfig.mk
 
 # Audio
-BOARD_USES_ALSA_AUDIO := true
-AUDIO_FEATURE_DISABLED_USBAUDIO := true
-AUDIO_FEATURE_ENABLED_EXTN_POST_PROC := true
+BOARD_USES_ALSA_AUDIO                             := true
+AUDIO_FEATURE_DISABLED_USBAUDIO                   := true
+AUDIO_FEATURE_ENABLED_EXTN_POST_PROC              := true
+AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS        := true # from n-mr0
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
 
 # Camera
-TARGET_PROVIDES_CAMERA_HAL := true
-USE_DEVICE_SPECIFIC_CAMERA := true
-TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
-TARGET_HAS_LEGACY_CAMERA_HAL1 := true
-TARGET_USES_MEDIA_EXTENSIONS := true
+TARGET_PROVIDES_CAMERA_HAL                        := true
+USE_DEVICE_SPECIFIC_CAMERA                        := true
+TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS            := true
+TARGET_HAS_LEGACY_CAMERA_HAL1                     := true
+TARGET_USES_MEDIA_EXTENSIONS                      := true
 TARGET_NEEDS_LEGACY_CAMERA_HAL1_DYN_NATIVE_HANDLE := true
 TARGET_PROCESS_SDK_VERSION_OVERRIDE := \
     /system/bin/mediaserver=22
+# TARGET_USES_AOSP              := true # from n-mr0
+# BOARD_QTI_CAMERA_32BIT_ONLY   := true # from n-mr0
+# BOARD_QTI_CAMERA_V2           := true # from n-mr0
+
 
 # Charger
-HEALTHD_ENABLE_TRICOLOR_LED := true
-BOARD_CHARGER_ENABLE_SUSPEND := true
-BOARD_CHARGER_SHOW_PERCENTAGE := true
+HEALTHD_ENABLE_TRICOLOR_LED      := true
+BOARD_CHARGER_ENABLE_SUSPEND     := true
+BOARD_CHARGER_SHOW_PERCENTAGE    := true
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
-BACKLIGHT_PATH :=/sys/class/leds/lcd-backlight/brightness
-RED_LED_PATH := /sys/class/leds/led:rgb_red/brightness
-GREEN_LED_PATH := /sys/class/leds/led:rgb_green/brightness
-BLUE_LED_PATH := /sys/class/leds/led:rgb_blue/brightness
+BACKLIGHT_PATH                   := /sys/class/leds/lcd-backlight/brightness
+RED_LED_PATH                     := /sys/class/leds/led:rgb_red/brightness
+GREEN_LED_PATH                   := /sys/class/leds/led:rgb_green/brightness
+BLUE_LED_PATH                    := /sys/class/leds/led:rgb_blue/brightness
+# BOARD_HAL_STATIC_LIBRARIES       += libhealthd.$(TARGET_DEVICE) from n-mr0
 
 # Font
 EXTENDED_FONT_FOOTPRINT := true
@@ -102,8 +111,8 @@ TARGET_EXFAT_DRIVER := exfat
 
 # GPS
 BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := $(TARGET_BOARD_PLATFORM)
-BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET := true
-TARGET_NO_RPC := true
+BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET  := true
+TARGET_NO_RPC                          := true
 
 # Filesystem
 TARGET_FS_CONFIG_GEN += $(COMMON_PATH)/config.fs
@@ -111,6 +120,8 @@ TARGET_FS_CONFIG_GEN += $(COMMON_PATH)/config.fs
 # Graphics
 USE_OPENGL_RENDERER                     := true
 TARGET_USES_ION                         := true
+# TARGET_USES_C2D_COMPOSITION := true # from n-mr0
+# TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true # from n-mr0
 NUM_FRAMEBUFFER_SURFACE_BUFFERS         := 3
 OVERRIDE_RS_DRIVER                      := libRSDriver_adreno.so
 TARGET_USES_GRALLOC1_ADAPTER            := true
@@ -143,8 +154,8 @@ TARGET_USES_INTERACTION_BOOST := true
 # SELinux
 include device/qcom/sepolicy-legacy/sepolicy.mk
 
-BOARD_SEPOLICY_DIRS += \
-    device/sony/msm8974-common/sepolicy
+# BOARD_SEPOLICY_DIRS += \
+#   device/sony/msm8974-common/sepolicy
 
 # Treble
 DEVICE_MANIFEST_FILE := device/sony/togari/treble-manifest.xml
@@ -152,45 +163,30 @@ DEVICE_MANIFEST_FILE := device/sony/togari/treble-manifest.xml
 
 ##############
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Platform
-BOARD_VENDOR_PLATFORM := rhine
-PRODUCT_PLATFORM      := rhine
+
 
 # Kernel information
-BOARD_KERNEL_IMAGE_NAME := zImage
-BOARD_KERNEL_BASE     := 0x00000000
-BOARD_KERNEL_PAGESIZE := 2048
-BOARD_KERNEL_CMDLINE  := androidboot.hardware=qcom
-BOARD_KERNEL_CMDLINE  += user_debug=31
-BOARD_KERNEL_CMDLINE  += msm_rtb.filter=0x3b7
-BOARD_KERNEL_CMDLINE  += ehci-hcd.park=3
-BOARD_KERNEL_CMDLINE  += androidboot.bootdevice=msm_sdcc.1
-BOARD_KERNEL_CMDLINE  += vmalloc=300M
-BOARD_KERNEL_CMDLINE  += dwc3.maximum_speed=high
-BOARD_KERNEL_CMDLINE  += dwc3_msm.prop_chg_detect=Y
-BOARD_KERNEL_CMDLINE  += mem=1759M
-
-#BOARD_KERNEL_CMDLINE  += androidboot.selinux=permissive
-BOARD_MKBOOTIMG_ARGS  := --ramdisk_offset 0x02000000
-BOARD_MKBOOTIMG_ARGS  += --tags_offset 0x01E00000
-
+BOARD_KERNEL_IMAGE_NAME   := zImage
 BOARD_KERNEL_SEPARATED_DT := true
+BOARD_KERNEL_BASE         := 0x00000000
+BOARD_KERNEL_PAGESIZE     := 2048
+BOARD_KERNEL_TAGS_OFFSET  := 0x01E00000
+BOARD_RAMDISK_OFFSET      := 0x02000000
+
+BOARD_KERNEL_CMDLINE      := androidboot.hardware=qcom
+BOARD_KERNEL_CMDLINE      += user_debug=31
+BOARD_KERNEL_CMDLINE      += msm_rtb.filter=0x3b7
+BOARD_KERNEL_CMDLINE      += ehci-hcd.park=3
+BOARD_KERNEL_CMDLINE      += androidboot.bootdevice=msm_sdcc.1
+BOARD_KERNEL_CMDLINE      += vmalloc=300M
+BOARD_KERNEL_CMDLINE      += dwc3.maximum_speed=high
+BOARD_KERNEL_CMDLINE      += dwc3_msm.prop_chg_detect=Y
+BOARD_KERNEL_CMDLINE      += mem=1759M
+
+BOARD_MKBOOTIMG_ARGS      := --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
+BOARD_MKBOOTIMG_ARGS      += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
+# BOARD_KERNEL_CMDLINE      += androidboot.selinux=permissive
 
 # ANT+
 BOARD_ANT_WIRELESS_DEVICE := "qualcomm-smd"
@@ -208,14 +204,14 @@ BOARD_HAVE_BLUETOOTH_QCOM := true
 BLUETOOTH_HCI_USE_MCT     := true
 
 # CM Hardware
-BOARD_HARDWARE_CLASS += device/sony/rhine-common/lineagehw
+BOARD_HARDWARE_CLASS += device/sony/togari/lineagehw
 
 # Dumpstate
 BOARD_LIB_DUMPSTATE := libdumpstate.sony
 
 # FM Radio
-AUDIO_FEATURE_ENABLED_FM := true
-BOARD_HAVE_QCOM_FM := true
+AUDIO_FEATURE_ENABLED_FM   := true
+BOARD_HAVE_QCOM_FM         := true
 TARGET_QCOM_NO_FM_FIRMWARE := true
 
 # Init
@@ -226,34 +222,31 @@ BOARD_SEPOLICY_DIRS += \
     device/sony/rhine-common/sepolicy
 
 # Shims
-# TARGET_LD_SHIM_LIBS := \
-# 	/system/vendor/bin/credmgrd|/system/vendor/lib/libshims_signal.so \
-# 	/system/vendor/bin/iddd|/system/vendor/lib/libshims_idd.so \
-# 	/system/vendor/bin/suntrold|/system/vendor/lib/libshims_signal.so \
+# TARGET_LD_SHIM_LIBS += \
+# 	/system/vendor/bin/credmgrd|/system/vendor/lib/libshims_signal.so
+# TARGET_LD_SHIM_LIBS += \
+# 	/system/vendor/bin/iddd|/system/vendor/lib/libshims_idd.so
+# TARGET_LD_SHIM_LIBS += \
+# 	/system/vendor/bin/suntrold|/system/vendor/lib/libshims_signal.so
+# TARGET_LD_SHIM_LIBS += \
 # 	/system/lib/hw/camera.vendor.qcom.so|/system/vendor/lib/libshim_camera.so \
 # 	/system/lib/hw/camera.vendor.qcom.so|/system/vendor/lib/libshim_cald.so \
-# 	/system/lib/hw/camera.vendor.qcom.so|libsensor.so \
-# 	/system/lib/libcald_pal.so|/system/vendor/lib/libshim_cald.so \
+# 	/system/lib/hw/camera.vendor.qcom.so|libsensor.so
+# TARGET_LD_SHIM_LIBS += \
+# 	/system/lib/libcald_pal.so|/system/vendor/lib/libshim_cald.so
+# TARGET_LD_SHIM_LIBS += \
 # 	/system/lib/libcammw.so|/system/vendor/lib/libshim_cald.so \
-# 	/system/lib/libcammw.so|libsensor.so \
-# 	/system/lib/libsomc_chokoballpal.so|/system/vendor/lib/libshim_camera.so \
-# 	/system/vendor/bin/mm-qcamera-daemon|/system/vendor/lib/libc_util.so \
-# 	/system/vendor/bin/mm-qcamera-daemon|libandroid.so \
-# 	/system/vendor/bin/iddd|libboringssl-compat.so \
-
-TARGET_LD_SHIM_LIBS := \
-	/system/lib/hw/camera.vendor.qcom.so|/system/vendor/lib/libshim_camera.so \
-	/system/lib/hw/camera.vendor.qcom.so|/system/vendor/lib/libshim_cald.so \
-	/system/lib/hw/camera.vendor.qcom.so|libsensor.so \
-	/system/lib/libcald_pal.so|/system/vendor/lib/libshim_cald.so \
-	/system/lib/libcammw.so|/system/vendor/lib/libshim_cald.so \
-	/system/lib/libcammw.so|libsensor.so \
-	/system/lib/libsomc_chokoballpal.so|/system/vendor/lib/libshim_camera.so \
+# 	/system/lib/libcammw.so|libsensor.so
+# TARGET_LD_SHIM_LIBS += \
+# 	/system/lib/libsomc_chokoballpal.so|/system/vendor/lib/libshim_camera.so
+TARGET_LD_SHIM_LIBS += \
 	/system/vendor/bin/mm-qcamera-daemon|/system/vendor/lib/libc_util.so \
 	/system/vendor/bin/mm-qcamera-daemon|libandroid.so
+# TARGET_LD_SHIM_LIBS += \
+#  	/system/vendor/bin/iddd|libboringssl-compat.so
 
 # Platform props
-TARGET_SYSTEM_PROP += device/sony/rhine-common/system.prop
+TARGET_SYSTEM_PROP += device/sony/togari/system.prop
 
 # Wifi
 BOARD_HAS_QCOM_WLAN              := true
@@ -275,16 +268,16 @@ TARGET_USERIMAGES_USE_EXT4       := true
 TARGET_USERIMAGES_USE_F2FS       := true
 
 # Recovery
-TARGET_RECOVERY_FSTAB          := device/sony/togari/rootdir/fstab.full
-TARGET_RECOVERY_PIXEL_FORMAT   := "RGBX_8888"
-BOARD_HAS_NO_SELECT_BUTTON     := true
-BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_23x41.h\"
+TARGET_RECOVERY_FSTAB            := device/sony/togari/rootdir/fstab.full
+TARGET_RECOVERY_PIXEL_FORMAT     := "RGBX_8888"
+BOARD_HAS_NO_SELECT_BUTTON       := true
+BOARD_USE_CUSTOM_RECOVERY_FONT   := \"roboto_23x41.h\"
 
 # Releasetools
-TARGET_RELEASETOOLS_EXTENSIONS := device/sony/togari
+TARGET_RELEASETOOLS_EXTENSIONS   := device/sony/togari
 
 # Binder API version
-TARGET_USES_64_BIT_BINDER := true
+TARGET_USES_64_BIT_BINDER        := true
 
 
 # inherit from the common rhine definitions
@@ -296,13 +289,10 @@ TARGET_USES_64_BIT_BINDER := true
 # Assert
 TARGET_OTA_ASSERT_DEVICE := C6802,C6806,C6833,C6843,togari
 
-
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/bluetooth
 
 # Kernel properties
 TARGET_KERNEL_CONFIG := lineageos_rhine_togari_row_defconfig
-
-
 
 # Partition information
 BOARD_VOLD_MAX_PARTITIONS := 26
@@ -310,7 +300,7 @@ BOARD_VOLD_MAX_PARTITIONS := 26
 BOARD_BOOTIMAGE_PARTITION_SIZE     :=    20971520
 BOARD_RECOVERYIMAGE_PARTITION_SIZE :=    16777216
 BOARD_SYSTEMIMAGE_PARTITION_SIZE   :=  2436890624
-BOARD_USERDATAIMAGE_PARTITION_SIZE := 12891176448
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 12891143680 # 12891176448 - 32k ? from n-mr0
 BOARD_CACHEIMAGE_PARTITION_SIZE    :=   209715200
 
 #Recovery
@@ -318,3 +308,6 @@ BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_15x24.h\"
 
 # Security patch level
 VENDOR_SECURITY_PATCH := 2015-11-01
+
+# Set seccomp policy for media server
+# BOARD_SECCOMP_POLICY += $(COMMON_PATH)/seccomp from n-mr0
