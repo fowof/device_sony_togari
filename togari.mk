@@ -366,7 +366,7 @@ PRODUCT_COPY_FILES += \
     $(COMMON_PATH)/media_profiles_V1_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_V1_0.xml
 
 # Include non-opensource parts
-$(call inherit-product, vendor/sony/rhine-common/rhine-common-vendor.mk)
+# $(call inherit-product, vendor/sony/rhine-common/rhine-common-vendor.mk)
 
 ###########
 
@@ -384,6 +384,9 @@ $(call inherit-product, vendor/sony/rhine-common/rhine-common-vendor.mk)
 
 
 DEVICE_PACKAGE_OVERLAYS += device/sony/togari/overlay
+DEVICE_PACKAGE_OVERLAYS += device/sony/togari/overlay-radio
+DEVICE_PACKAGE_OVERLAYS += device/sony/togari/overlay-msm8974
+DEVICE_PACKAGE_OVERLAYS += device/sony/togari/overlay-wifionly
 
 # These are the hardware-specific features
 PRODUCT_COPY_FILES += \
