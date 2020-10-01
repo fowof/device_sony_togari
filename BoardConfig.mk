@@ -220,33 +220,6 @@ BOARD_LIB_DUMPSTATE := libdumpstate.sony
 # Init
 TARGET_INIT_VENDOR_LIB := libinit_rhine
 
-# SELinux
-
-
-# Shims
-# TARGET_LD_SHIM_LIBS += \
-# 	/system/vendor/bin/credmgrd|/system/vendor/lib/libshims_signal.so
-# TARGET_LD_SHIM_LIBS += \
-# 	/system/vendor/bin/iddd|/system/vendor/lib/libshims_idd.so
-# TARGET_LD_SHIM_LIBS += \
-# 	/system/vendor/bin/suntrold|/system/vendor/lib/libshims_signal.so
-# TARGET_LD_SHIM_LIBS += \
-# 	/system/lib/hw/camera.vendor.qcom.so|/system/vendor/lib/libshim_camera.so \
-# 	/system/lib/hw/camera.vendor.qcom.so|/system/vendor/lib/libshim_cald.so \
-# 	/system/lib/hw/camera.vendor.qcom.so|libsensor.so
-# TARGET_LD_SHIM_LIBS += \
-# 	/system/lib/libcald_pal.so|/system/vendor/lib/libshim_cald.so
-# TARGET_LD_SHIM_LIBS += \
-# 	/system/lib/libcammw.so|/system/vendor/lib/libshim_cald.so \
-# 	/system/lib/libcammw.so|libsensor.so
-# TARGET_LD_SHIM_LIBS += \
-# 	/system/lib/libsomc_chokoballpal.so|/system/vendor/lib/libshim_camera.so
-TARGET_LD_SHIM_LIBS += \
-	/system/vendor/bin/mm-qcamera-daemon|/system/vendor/lib/libc_util.so \
-	/system/vendor/bin/mm-qcamera-daemon|libandroid.so
-# TARGET_LD_SHIM_LIBS += \
-#  	/system/vendor/bin/iddd|libboringssl-compat.so
-
 # Platform props
 TARGET_SYSTEM_PROP += device/sony/togari/system.prop
 

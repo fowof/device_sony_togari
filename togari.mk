@@ -125,12 +125,6 @@ endif
 # Power
 # now qti binderised
 
-# Camera (stock blobs)
-PRODUCT_PACKAGES += \
-	camera.qcom \
-    libshims_idd \
-    libshims_signal \
-
 # Snap Camera
 PRODUCT_PACKAGES += \
     Snap
