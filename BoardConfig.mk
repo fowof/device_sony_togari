@@ -63,10 +63,18 @@ TARGET_CUSTOM_DTBTOOL      := dtbToolLineage
 BOARD_USES_ALSA_AUDIO                             := true
 AUDIO_FEATURE_DISABLED_USBAUDIO                   := true
 AUDIO_FEATURE_ENABLED_EXTN_POST_PROC              := true
-AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS        := true # from n-mr0
+# AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS        := true # from n-mr0
+USE_LEGACY_LOCAL_AUDIO_HAL                        := true
+AUDIO_FEATURE_ENABLED_FM_POWER_OPT                := true
+USE_XML_AUDIO_POLICY_CONF                         := 1
+USE_CUSTOM_AUDIO_POLICY                           := 1
 
 # Bluetooth
-BOARD_HAVE_BLUETOOTH := true
+BOARD_HAVE_BLUETOOTH      := true
+BOARD_HAVE_BLUETOOTH_QCOM := true
+BLUETOOTH_HCI_USE_MCT     := true
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/bluetooth
+
 
 # Camera
 TARGET_PROVIDES_CAMERA_HAL                        := true
@@ -116,6 +124,14 @@ TARGET_NO_RPC                          := true
 
 # Filesystem
 TARGET_FS_CONFIG_GEN += $(COMMON_PATH)/config.fs
+BOARD_FLASH_BLOCK_SIZE           := 131072
+TARGET_USERIMAGES_USE_EXT4       := true
+TARGET_USERIMAGES_USE_F2FS       := true
+
+# FM Radio
+AUDIO_FEATURE_ENABLED_FM   := true
+BOARD_HAVE_QCOM_FM         := true
+TARGET_QCOM_NO_FM_FIRMWARE := true
 
 # Graphics
 USE_OPENGL_RENDERER                     := true
@@ -153,9 +169,8 @@ TARGET_USES_INTERACTION_BOOST := true
 
 # SELinux
 include device/qcom/sepolicy-legacy/sepolicy.mk
-
-# BOARD_SEPOLICY_DIRS += \
-#   device/sony/msm8974-common/sepolicy
+BOARD_SEPOLICY_DIRS += device/sony/togari/sepolicy
+BOARD_SEPOLICY_DIRS += device/sony/togari/sepolicy-msm8974
 
 # Treble
 DEVICE_MANIFEST_FILE := device/sony/togari/treble-manifest.xml
@@ -174,6 +189,9 @@ BOARD_KERNEL_PAGESIZE     := 2048
 BOARD_KERNEL_TAGS_OFFSET  := 0x01E00000
 BOARD_RAMDISK_OFFSET      := 0x02000000
 
+BOARD_MKBOOTIMG_ARGS      := --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
+BOARD_MKBOOTIMG_ARGS      += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
+
 BOARD_KERNEL_CMDLINE      := androidboot.hardware=qcom
 BOARD_KERNEL_CMDLINE      += user_debug=31
 BOARD_KERNEL_CMDLINE      += msm_rtb.filter=0x3b7
@@ -183,25 +201,13 @@ BOARD_KERNEL_CMDLINE      += vmalloc=300M
 BOARD_KERNEL_CMDLINE      += dwc3.maximum_speed=high
 BOARD_KERNEL_CMDLINE      += dwc3_msm.prop_chg_detect=Y
 BOARD_KERNEL_CMDLINE      += mem=1759M
-
-BOARD_MKBOOTIMG_ARGS      := --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
-BOARD_MKBOOTIMG_ARGS      += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
 # BOARD_KERNEL_CMDLINE      += androidboot.selinux=permissive
 
 # ANT+
 BOARD_ANT_WIRELESS_DEVICE := "qualcomm-smd"
 
-# Audio
-BOARD_USES_ALSA_AUDIO              := true
-USE_LEGACY_LOCAL_AUDIO_HAL         := true
-AUDIO_FEATURE_ENABLED_FM_POWER_OPT := true
-USE_XML_AUDIO_POLICY_CONF          := 1
-USE_CUSTOM_AUDIO_POLICY            := 1
 
-# Bluetooth
-BOARD_HAVE_BLUETOOTH      := true
-BOARD_HAVE_BLUETOOTH_QCOM := true
-BLUETOOTH_HCI_USE_MCT     := true
+
 
 # CM Hardware
 BOARD_HARDWARE_CLASS += device/sony/togari/lineagehw
@@ -209,17 +215,13 @@ BOARD_HARDWARE_CLASS += device/sony/togari/lineagehw
 # Dumpstate
 BOARD_LIB_DUMPSTATE := libdumpstate.sony
 
-# FM Radio
-AUDIO_FEATURE_ENABLED_FM   := true
-BOARD_HAVE_QCOM_FM         := true
-TARGET_QCOM_NO_FM_FIRMWARE := true
+
 
 # Init
 TARGET_INIT_VENDOR_LIB := libinit_rhine
 
 # SELinux
-BOARD_SEPOLICY_DIRS += \
-    device/sony/rhine-common/sepolicy
+
 
 # Shims
 # TARGET_LD_SHIM_LIBS += \
@@ -262,16 +264,14 @@ WIFI_DRIVER_FW_PATH_AP           := "ap"
 # RIL
 BOARD_PROVIDES_LIBRIL            := true
 
-# Filesystem
-BOARD_FLASH_BLOCK_SIZE           := 131072
-TARGET_USERIMAGES_USE_EXT4       := true
-TARGET_USERIMAGES_USE_F2FS       := true
+
 
 # Recovery
 TARGET_RECOVERY_FSTAB            := device/sony/togari/rootdir/fstab.full
 TARGET_RECOVERY_PIXEL_FORMAT     := "RGBX_8888"
 BOARD_HAS_NO_SELECT_BUTTON       := true
-BOARD_USE_CUSTOM_RECOVERY_FONT   := \"roboto_23x41.h\"
+# BOARD_USE_CUSTOM_RECOVERY_FONT   := \"roboto_23x41.h\"
+BOARD_USE_CUSTOM_RECOVERY_FONT   := \"roboto_15x24.h\"
 
 # Releasetools
 TARGET_RELEASETOOLS_EXTENSIONS   := device/sony/togari
@@ -289,7 +289,6 @@ TARGET_USES_64_BIT_BINDER        := true
 # Assert
 TARGET_OTA_ASSERT_DEVICE := C6802,C6806,C6833,C6843,togari
 
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/bluetooth
 
 # Kernel properties
 TARGET_KERNEL_CONFIG := lineageos_rhine_togari_row_defconfig
@@ -302,9 +301,6 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE :=    16777216
 BOARD_SYSTEMIMAGE_PARTITION_SIZE   :=  2436890624
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 12891143680 # 12891176448 - 32k ? from n-mr0
 BOARD_CACHEIMAGE_PARTITION_SIZE    :=   209715200
-
-#Recovery
-BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_15x24.h\"
 
 # Security patch level
 VENDOR_SECURITY_PATCH := 2015-11-01
