@@ -207,11 +207,6 @@ BOARD_KERNEL_CMDLINE      += mem=1759M
 BOARD_ANT_WIRELESS_DEVICE := "qualcomm-smd"
 
 
-
-
-# CM Hardware
-BOARD_HARDWARE_CLASS += device/sony/togari/lineagehw
-
 # Dumpstate
 BOARD_LIB_DUMPSTATE := libdumpstate.sony
 
