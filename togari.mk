@@ -420,6 +420,9 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 # Include non-opensource parts
 # $(call inherit-product, vendor/sony/togari/togari-vendor.mk)
 
+# vibrator
+PRODUCT_PACKAGES += vibrator.default
+
 include $(LOCAL_PATH)/proprietary/c6833-modem/packages.mk
 include $(LOCAL_PATH)/proprietary/c6833-bootlogo/packages.mk
 include $(LOCAL_PATH)/proprietary/sony-togari/packages.mk
