@@ -73,7 +73,7 @@ USE_CUSTOM_AUDIO_POLICY                           := 1
 BOARD_HAVE_BLUETOOTH      := true
 BOARD_HAVE_BLUETOOTH_QCOM := true
 BLUETOOTH_HCI_USE_MCT     := true
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/include/bluetooth
 
 
 # Camera
@@ -123,7 +123,7 @@ BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET  := true
 TARGET_NO_RPC                          := true
 
 # Filesystem
-TARGET_FS_CONFIG_GEN += $(COMMON_PATH)/config.fs
+TARGET_FS_CONFIG_GEN += device/sony/togari/config.fs
 BOARD_FLASH_BLOCK_SIZE           := 131072
 TARGET_USERIMAGES_USE_EXT4       := true
 TARGET_USERIMAGES_USE_F2FS       := true

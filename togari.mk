@@ -14,7 +14,7 @@
 
 DEVICE_PATH           := device/sony/togari
 DEVICE_COPY_IN_ROOT   := $(DEVICE_PATH)/rootdir
-DEVICE_COPY_IN_SYSTEM := $(DEVICE_IN_ROOT)/system
+DEVICE_COPY_IN_SYSTEM := $(DEVICE_COPY_IN_ROOT)/system
 DEVICE_COPY_IN_VENDOR := $(DEVICE_COPY_IN_SYSTEM)/vendor
 
 # Include msm8974-common system properties
@@ -107,10 +107,10 @@ PRODUCT_PACKAGES += \
 
 # GPS
 PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/gps/etc/flp.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/flp.conf \
-    $(DEVICE_PATH)/gps/etc/gps.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/gps.conf \
-    $(DEVICE_PATH)/gps/etc/izat.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/izat.conf \
-    $(DEVICE_PATH)/gps/etc/sap.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sap.conf
+    $(DEVICE_PATH)/modules/gps/etc/flp.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/flp.conf \
+    $(DEVICE_PATH)/modules/gps/etc/gps.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/gps.conf \
+    $(DEVICE_PATH)/modules/gps/etc/izat.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/izat.conf \
+    $(DEVICE_PATH)/modules/gps/etc/sap.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sap.conf
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.location.gps.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/android.hardware.location.gps.xml
@@ -242,7 +242,7 @@ PRODUCT_COPY_FILES += \
 # Sensors
 PRODUCT_COPY_FILES += \
    $(DEVICE_COPY_IN_SYSTEM)/etc/sensors/sensor_def_qcomdev.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_def_qcomdev.conf \
-	 $(DEVICE_COPY_IN_SYSTEM)/etc/sensors/sensor_calib.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_calib.conf
+	 $(DEVICE_COPY_IN_SYSTEM)/etc/sensors/sensors_calib.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensors_calib.conf
 
 
 # Snap Camera
