@@ -62,3 +62,5 @@ LOCAL_STATIC_LIBRARIES := \
 LOCAL_CLANG := true
 
 include $(BUILD_EXECUTABLE)
+
+include $(LOCAL_PATH)/install.mk
