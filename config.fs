@@ -1,9 +1,9 @@
-[system/bin/qmuxd]
+[system/vendor/bin/qmuxd]
 mode: 0700
 user: AID_RADIO
 group: AID_SHELL
 caps: BLOCK_SUSPEND
-[system/bin/mm-qcamera-daemon]
+[system/vendor/bin/mm-qcamera-daemon]
 mode: 0700
 user: AID_CAMERA
 group: AID_SHELL
