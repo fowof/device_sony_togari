@@ -169,8 +169,8 @@ TARGET_USES_INTERACTION_BOOST := true
 
 # SELinux
 include device/qcom/sepolicy-legacy/sepolicy.mk
-BOARD_SEPOLICY_DIRS += device/sony/togari/sepolicy
-BOARD_SEPOLICY_DIRS += device/sony/togari/sepolicy-msm8974
+BOARD_SEPOLICY_DIRS += device/sony/togari/sepolicy/common
+BOARD_SEPOLICY_DIRS += device/sony/togari/sepolicy/msm8974
 
 # Treble
 DEVICE_MANIFEST_FILE := device/sony/togari/treble-manifest.xml
