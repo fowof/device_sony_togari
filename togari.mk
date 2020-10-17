@@ -17,9 +17,6 @@ DEVICE_COPY_IN_ROOT   := $(DEVICE_PATH)/rootdir
 DEVICE_COPY_IN_SYSTEM := $(DEVICE_COPY_IN_ROOT)/system
 DEVICE_COPY_IN_VENDOR := $(DEVICE_COPY_IN_SYSTEM)/vendor
 
-# Include msm8974-common system properties
--include $(DEVICE_PATH)/systemprop.mk
-
 # inherit hidl hals
 $(call inherit-product, $(DEVICE_PATH)/hidl.mk)
 
