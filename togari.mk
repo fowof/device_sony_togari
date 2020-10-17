@@ -188,12 +188,7 @@ PRODUCT_PACKAGES += \
 # Overlay
 DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay
 DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay-msm8974
-ifneq ($(BOARD_HAVE_RADIO),false)
-    DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay-radio
-    $(call inherit-product, $(DEVICE_PATH)/radio.mk)
-else
-    DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay-wifionly
-endif
+DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay-radio
 
 # Power
 # now qti binderised
