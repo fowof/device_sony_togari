@@ -186,9 +186,9 @@ PRODUCT_PACKAGES += \
     libstagefrighthw
 
 # Overlay
-DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay
-DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay-msm8974
-DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay-radio
+DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay/common
+DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay/msm8974
+DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay/radio
 
 # Power
 # now qti binderised
