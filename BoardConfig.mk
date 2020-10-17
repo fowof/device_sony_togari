@@ -241,11 +241,6 @@ BOARD_HAS_NO_SELECT_BUTTON       := true
 # BOARD_USE_CUSTOM_RECOVERY_FONT   := \"roboto_23x41.h\"
 BOARD_USE_CUSTOM_RECOVERY_FONT   := \"roboto_15x24.h\"
 
-include device/sony/togari/recovery/variables.mk
-
-# Releasetools
-TARGET_RELEASETOOLS_EXTENSIONS   := device/sony/togari
-
 # Binder API version
 TARGET_USES_64_BIT_BINDER        := true
 
@@ -257,7 +252,7 @@ TARGET_USES_64_BIT_BINDER        := true
 #-include vendor/sony/togari/BoardConfigVendor.mk
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := C6802,C6806,C6833,C6843,togari
+TARGET_OTA_ASSERT_DEVICE := C6833,togari
 
 
 # Kernel properties
