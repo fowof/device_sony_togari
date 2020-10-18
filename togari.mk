@@ -157,10 +157,6 @@ PRODUCT_PACKAGES += \
 	  Tag \
 	  com.android.nfc_extras
 
-PRODUCT_COPY_FILES += \
-  frameworks/native/data/etc/com.android.nfc_extras.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/com.android.nfc_extras.xml
-
-
 # NFCEE access control
 ifeq ($(TARGET_BUILD_VARIANT),user)
     NFCEE_ACCESS_PATH := $(DEVICE_COPY_IN_SYSTEM)/etc/nfcee_access.xml
@@ -223,13 +219,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     keycheck
 
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/recovery/c6x02.sh:c6x02.sh
-
 # Seccomp
-PRODUCT_COPY_FILES += \
-	  $(DEVICE_PATH)/seccomp/mediacodec.policy:$(TARGET_COPY_OUT_SYSTEM)/etc/seccomp_policy/mediacodec.policy \
-	  $(DEVICE_PATH)/seccomp/mediaextractor.policy:$(TARGET_COPY_OUT_SYSTEM)/etc/seccomp_policy/mediaextractor.policy
+# PRODUCT_COPY_FILES += \
+# 	  $(DEVICE_PATH)/seccomp/mediacodec.policy:$(TARGET_COPY_OUT_SYSTEM)/etc/seccomp_policy/mediacodec.policy \
+# 	  $(DEVICE_PATH)/seccomp/mediaextractor.policy:$(TARGET_COPY_OUT_SYSTEM)/etc/seccomp_policy/mediaextractor.policy
 
 # Sensors
 PRODUCT_COPY_FILES += \
@@ -284,12 +277,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_COPY_FILES += \
 	  $(DEVICE_COPY_IN_SYSTEM)/etc/init.qcom.wifi.sh:$(TARGET_COPY_OUT_SYSTEM)/etc/init.qcom.wifi.sh \
-	  $(DEVICE_COPY_IN_SYSTEM)/etc/firmware/wlan/prima/WCNSS_cfg.dat:$(TARGET_COPY_OUT_SYSTEM)/etc/firmware/wlan/prima/WCNSS_cfg.dat \
-	  $(DEVICE_COPY_IN_SYSTEM)/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_SYSTEM)/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini \
-	  $(DEVICE_COPY_IN_SYSTEM)/etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin:$(TARGET_COPY_OUT_SYSTEM)/etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin \
 	  $(DEVICE_COPY_IN_SYSTEM)/etc/hostapd/hostapd_default.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/hostapd/hostapd_default.conf
-
-
 
 ########
 
