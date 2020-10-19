@@ -21,13 +21,13 @@ import /init.qcom.power.rc
 import /init.msm8974-common.rc
 
 on early-boot
-    #exec /system/bin/sh /system/etc/init.qcom.wifi.sh
+    # exec /system/bin/sh /system/etc/init.qcom.wifi.sh
     write /dev/wcnss_wlan 1
     chown system system /sys/class/leds/wled:backlight/brightness
     chown system system /sys/class/leds/wled:backlight/max_brightness
 
 on boot
-    exec /system/vendor/bin/btnvtool -O
+    # exec /system/vendor/bin/btnvtool -O
     chown bluetooth bluetooth /sys/module/bluetooth_power/parameters/power
     chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
     chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
