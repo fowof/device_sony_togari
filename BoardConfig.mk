@@ -192,7 +192,7 @@ BOARD_RAMDISK_OFFSET      := 0x02000000
 BOARD_MKBOOTIMG_ARGS      := --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS      += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
 
-BOARD_KERNEL_CMDLINE      := androidboot.hardware=qcom
+BOARD_KERNEL_CMDLINE      := androidboot.hardware=togari
 BOARD_KERNEL_CMDLINE      += user_debug=31
 BOARD_KERNEL_CMDLINE      += msm_rtb.filter=0x3b7
 BOARD_KERNEL_CMDLINE      += ehci-hcd.park=3
