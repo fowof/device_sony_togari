@@ -150,7 +150,7 @@ on property:sys.usb.config=midi
     write /sys/class/android_usb/android0/idProduct C${ro.usb.pid_suffix}
     write /sys/class/android_usb/android0/functions ${sys.usb.config}
     write /sys/class/android_usb/android0/enable 1
-    stop adb
+    stop adbd
     setprop sys.usb.state ${sys.usb.config}
 
 on property:sys.usb.config=midi,adb
