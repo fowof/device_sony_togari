@@ -162,16 +162,29 @@
 /dev/uio1                 0660   system     system
 /dev/uio2                 0660   system     system
 
-# Lights
-/sys/devices/01-qcom,leds-d000/leds/led:*                       max_brightness      0664 system system
-/sys/devices/01-qcom,leds-d000/leds/led:*                       brightness          0664 system system
-/sys/devices/01-qcom,leds-d000/leds/led:*                       blink               0664 system system
-/sys/devices/01-qcom,leds-d000/leds/led:*                       duty_pcts           0664 system system
-/sys/devices/01-qcom,leds-d000/leds/led:*                       ramp_step_ms        0664 system system
-/sys/devices/01-qcom,leds-d800/leds/wled:backlight              max_brightness      0664 system system
-/sys/devices/01-qcom,leds-d800/leds/wled:backlight              brightness          0664 system system
-/sys/devices/mdp.0/qcom,mdss_fb_primary.174/leds/lcd-backlight  brightness          0664 system system
-/sys/devices/mdp.0/qcom,mdss_fb_primary.174/leds/lcd-backlight  max_brightness      0664 system system
+# Lights ( /sys/class/leds/* )
+
+# /sys/devices/01-qcom,leds-d000/leds/led:*                       max_brightness      0664 system system
+# /sys/devices/01-qcom,leds-d000/leds/led:*                       brightness          0664 system system
+# /sys/devices/01-qcom,leds-d000/leds/led:*                       blink               0664 system system
+# /sys/devices/01-qcom,leds-d000/leds/led:*                       duty_pcts           0664 system system
+# /sys/devices/01-qcom,leds-d000/leds/led:*                       ramp_step_ms        0664 system system
+# /sys/devices/01-qcom,leds-d800/leds/wled:backlight              max_brightness      0664 system system
+# /sys/devices/01-qcom,leds-d800/leds/wled:backlight              brightness          0664 system system
+
+/sys/devices/leds-qpnp-*/leds/led:rgb_*                         brightness          0660 system system
+/sys/devices/leds-qpnp-*/leds/led:rgb_*                         max_brightness      0660 system system
+/sys/devices/leds-qpnp-*/leds/led:rgb_*                         lut_pwm             0660 system system
+/sys/devices/leds-qpnp-*/leds/led:rgb_*                         step_duration       0660 system system
+
+/sys/devices/leds-qpnp-*/leds/rgb                               sync_state          0660 system system
+/sys/devices/leds-qpnp-*/leds/rgb                               start_blink         0220 system system
+
+/sys/devices/leds-qpnp-*/leds/wled:backlight*                   brightness          0660 system system
+/sys/devices/leds-qpnp-*/leds/wled:backlight*                   max_brightness      0660 system system
+
+/sys/devices/mdp.*/qcom,mdss_fb_primary.*/leds/lcd-backlight    brightness          0664 system system
+/sys/devices/mdp.*/qcom,mdss_fb_primary.*/leds/lcd-backlight    max_brightness      0664 system system
 
 # TA
 /dev/block/bootdevice/by-name/TA 0770  system      root
