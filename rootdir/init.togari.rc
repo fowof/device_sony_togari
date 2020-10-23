@@ -20,8 +20,10 @@ import /init.qcom.power.rc
 import /init.msm8974-common.rc
 
 on early-boot
-    # exec /system/bin/sh /system/etc/init.qcom.wifi.sh
+
     write /dev/wcnss_wlan 1
+    # write /sys/devices/fb000000.qcom,wcnss-wlan/serial_number ${ro.serialno}
+
     chown system system /sys/class/leds/wled:backlight/brightness
     chown system system /sys/class/leds/wled:backlight/max_brightness
 

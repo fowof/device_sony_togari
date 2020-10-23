@@ -276,8 +276,7 @@ PRODUCT_COPY_FILES += \
 	  $(DEVICE_COPY_IN_SYSTEM)/etc/wifi/p2p_supplicant_overlay.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/wifi/p2p_supplicant_overlay.conf
 
 PRODUCT_COPY_FILES += \
-	  $(DEVICE_COPY_IN_SYSTEM)/etc/init.qcom.wifi.sh:$(TARGET_COPY_OUT_SYSTEM)/etc/init.qcom.wifi.sh \
-	  $(DEVICE_COPY_IN_SYSTEM)/etc/hostapd/hostapd_default.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/hostapd/hostapd_default.conf
+    $(DEVICE_COPY_IN_SYSTEM)/etc/hostapd/hostapd_default.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/hostapd/hostapd_default.conf
 
 ########
 
