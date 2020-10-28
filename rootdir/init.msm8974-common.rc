@@ -69,7 +69,7 @@ on early-boot
     write /sys/kernel/boot_adsp/boot 1
 
     # Run pre_hw_config.sh before entering charge only mode.
-    exec /system/bin/sh /system/etc/pre_hw_config.sh
+    # exec /system/bin/sh /system/etc/pre_hw_config.sh
 
 on boot
     write /sys/module/qpnp_power_on/parameters/forcecrash_on 1
@@ -222,8 +222,8 @@ on boot
 on post-fs
     # Change to socket location on libkeyctrl/suntory for /data encryption
     # Create suntory data directory
-    mkdir /dev/socket/suntory 0755 system system
-    mkdir /data/suntory 0755 system system
+    # mkdir /dev/socket/suntory 0755 system system
+    # mkdir /data/suntory 0755 system system
 
     # led RGB
     chown system system /sys/class/leds/rgb/sync_state
@@ -324,7 +324,7 @@ on post-fs-data
     mkdir /data/persist 0770 system system
 
     # SONY: Create dir for Widevine keybox
-    mkdir /data/persist/wv 0700 system system
+    # mkdir /data/persist/wv 0700 system system
 
     # SONY: Create dir for marlin sdata
     mkdir /data/persist/marlin 0700 system system
@@ -333,7 +333,7 @@ on post-fs-data
     mkdir /data/pc 0600 radio radio
     mkdir /cache/pc 0770 radio system
 
-    start wvkbd_installer
+    # start wvkbd_installer
 
     setprop vold.post_fs_data_done 1
     setprop vold.decrypt trigger_restart_framework
@@ -367,11 +367,11 @@ on property:ro.data.large_tcp_window_size=true
     write /proc/sys/net/ipv4/tcp_adv_win_scale 2
 
 # Start suntrold
-service suntrold /system/vendor/bin/suntrold
-    user system
-    group system camera
-    oneshot
-    class main
+#service suntrold /system/vendor/bin/suntrold
+#    user system
+#    group system camera
+#    oneshot
+#    class main
 
 # Thermal Manager service
 service thermanager /system/vendor/bin/thermanager /system/vendor/etc/thermanager.xml
@@ -395,10 +395,10 @@ service sensors /system/vendor/bin/sensors.qcom
     group root wakelock
 
 # HexagonDSP FastRPC daemon
-service adsprpcd /system/vendor/bin/adsprpcd
-   class main
-   user media
-   group media
+#service adsprpcd /system/vendor/bin/adsprpcd
+#   class main
+#   user media
+#   group media
 
 service charger /charger
     class charger
@@ -433,8 +433,8 @@ service mediadrm /system/bin/mediadrmserver
     group mediadrm drmrpc
     ioprio rt 4
 
-service mpdecision /system/vendor/bin/mpdecision --avg_comp
-    class main
-    user root
-    group root readproc
-    disabled
+# service mpdecision /system/vendor/bin/mpdecision --avg_comp
+#    class main
+#    user root
+#    group root readproc
+#    disabled
