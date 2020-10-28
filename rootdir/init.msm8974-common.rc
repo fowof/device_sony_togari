@@ -374,12 +374,12 @@ on property:ro.data.large_tcp_window_size=true
 #    class main
 
 # Thermal Manager service
-service thermanager /system/vendor/bin/thermanager /system/vendor/etc/thermanager.xml
+service thermanager /system/vendor/bin/thermanager /system/etc/thermanager.xml
     class main
     user root
     group root
 
-service irsc_util /system/vendor/bin/irsc_util "/system/vendor/etc/sec_config"
+service irsc_util /system/vendor/bin/irsc_util "/system/etc/sec_config"
     class main
     user root
     oneshot
