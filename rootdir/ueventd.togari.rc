@@ -176,6 +176,8 @@
 /sys/devices/leds-qpnp-*/leds/led:rgb_*                         max_brightness      0660 system system
 /sys/devices/leds-qpnp-*/leds/led:rgb_*                         lut_pwm             0660 system system
 /sys/devices/leds-qpnp-*/leds/led:rgb_*                         step_duration       0660 system system
+/sys/devices/leds-qpnp-*/leds/led:rgb_*                         pause_lo_multi      0660 system system
+/sys/devices/leds-qpnp-*/leds/led:rgb_*                         pause_hi_multi      0660 system system
 
 /sys/devices/leds-qpnp-*/leds/rgb                               sync_state          0660 system system
 /sys/devices/leds-qpnp-*/leds/rgb                               start_blink         0220 system system
