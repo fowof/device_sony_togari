@@ -286,7 +286,7 @@ PRODUCT_COPY_FILES += \
     $(DEVICE_COPY_IN_ROOT)/init.msm8974-common.rc:$(TARGET_COPY_OUT_ROOT)/init.msm8974-common.rc \
     $(DEVICE_COPY_IN_ROOT)/init.sony.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.sony.usb.rc \
     $(DEVICE_COPY_IN_ROOT)/init.recovery.qcom.rc:$(TARGET_COPY_OUT_ROOT)/init.recovery.qcom.rc \
-    $(DEVICE_COPY_IN_ROOT)/fstab.togari:$(TARGET_COPY_OUT_ROOT)/fstab.togari \
+    $(DEVICE_COPY_IN_VENDOR)/etc/fstab.togari:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.togari \
     $(DEVICE_COPY_IN_ROOT)/init.qcom.rc:$(TARGET_COPY_OUT_ROOT)/init.qcom.rc \
     $(DEVICE_COPY_IN_ROOT)/init.camera.rc:$(TARGET_COPY_OUT_ROOT)/init.camera.rc \
     $(DEVICE_COPY_IN_ROOT)/init.qcom.power.rc:$(TARGET_COPY_OUT_ROOT)/init.qcom.power.rc \
