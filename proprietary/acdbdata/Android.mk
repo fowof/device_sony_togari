@@ -1,3 +1,4 @@
+LOCAL_PATH := $(call my-dir)
 
 #
 # Audio Calibration Databases

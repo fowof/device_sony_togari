@@ -1,6 +1,7 @@
-#!/usr/bin/env sh
 
-set -e
+#
+# `source` this file
+#
 
 cd "$(dirname "$0")"
 DEVICE_PATH="$(pwd)"
@@ -8,10 +9,18 @@ DEVICE_PATH="$(pwd)"
 cd ../../../
 DEVICE_PATH=${DEVICE_PATH#$(pwd)/}
 
+#
+# COPY FILES
+#
+
 for file in $(find $DEVICE_PATH/repocopy -type f)
 do
   cp $file ${file#$DEVICE_PATH/repocopy/}
 done
+
+#
+# PICK PATCHES
+#
 
 repopick -f 295701 # Add product_launched_with_j_mr2 for JellyBean 4.3
 repopick 292788 # adb

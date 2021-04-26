@@ -1,4 +1,6 @@
 
+LOCAL_PATH := $(call my-dir)
+
 include $(CLEAR_VARS)
 LOCAL_MODULE        := tzhdcp_b00
 LOCAL_MODULE_OWNER  := Sony Mobile

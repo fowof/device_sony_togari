@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_DEVICE_PATH           := $(call my-dir)
-
 # inherit from the common rhine definitions
 include device/sony/rhine-common/BoardConfigCommon.mk
 
@@ -23,9 +21,9 @@ include device/sony/rhine-common/BoardConfigCommon.mk
 # Assert
 TARGET_OTA_ASSERT_DEVICE := C6802,C6806,C6833,C6843,togari
 
-# TARGET_SPECIFIC_HEADER_PATH                 += $(_DEVICE_PATH)/include # does not exist
+# TARGET_SPECIFIC_HEADER_PATH                 += device/sony/togari/include # does not exist
 
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(_DEVICE_PATH)/bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/bluetooth
 
 # Kernel properties
 TARGET_KERNEL_CONFIG := lineageos_rhine_togari_row_defconfig
