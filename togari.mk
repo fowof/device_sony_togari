@@ -48,4 +48,4 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 
 # Include non-opensource parts
 # $(call inherit-product, vendor/sony/togari/togari-vendor.mk)
-include $(call my-dir)/proprietary/*/packages.mk
+include device/sony/togari/proprietary/*/packages.mk
