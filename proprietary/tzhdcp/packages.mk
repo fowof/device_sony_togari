@@ -1,0 +1,7 @@
+
+PRODUCT_PACKAGES += tzhdcp_b00
+PRODUCT_PACKAGES += tzhdcp_b01
+PRODUCT_PACKAGES += tzhdcp_b02
+PRODUCT_PACKAGES += tzhdcp_b03
+PRODUCT_PACKAGES += tzhdcp_flist
+PRODUCT_PACKAGES += tzhdcp_mdt
