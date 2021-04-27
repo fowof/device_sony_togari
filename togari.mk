@@ -31,11 +31,19 @@ PRODUCT_COPY_FILES += \
 PRODUCT_AAPT_CONFIG      := large
 PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
-PRODUCT_PACKAGES += \
-  mixer_paths_xml \
-	sensor_def_qcomdev_conf \
-	sensors_calib_conf \
-  thermanager_xml
+# Audio
+PRODUCT_COPY_FILES += \
+   $(LOCAL_PATH)/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml
+
+# Sensors
+PRODUCT_COPY_FILES += \
+   $(LOCAL_PATH)/configs/sensor_def_qcomdev.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensor_def_qcomdev.conf \
+	 $(LOCAL_PATH)/configs/sensors_calib.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/sensors_calib.conf
+
+# Thermal manager
+PRODUCT_COPY_FILES += \
+   $(LOCAL_PATH)/configs/thermanager.xml:$(TARGET_COPY_OUT_VENDOR)/etc/thermanager.xml
+
 
 # Device specific init
 PRODUCT_COPY_FILES += \
