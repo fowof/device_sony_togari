@@ -3,12 +3,15 @@
 ### `source` this file after `source` build/envsetup.sh ###
 ###                                                     ###
 
-_DIR_DEVICE="$(cd "$(dirname "$0")"; pwd)"
-_DIR_REPOROOT="$(cd "$_DIR_DEVICE";cd ../../../;pwd)"
+_DIR_DEVICE="$(cd "$(dirname "${BASH_SOURCE:-$0}")"; pwd)"
+_DIR_REPOROOT="$(cd "$_DIR_DEVICE"; cd ../../../;pwd)"
 
 [ "$(pwd)" = "$_DIR_REPOROOT"     ] || cd "$_DIR_REPOROOT"
 [ -f build/envsetup.sh            ] || return 1
 command -v repopick >/dev/null 2>&1 || source build/envsetup.sh
+
+_DIR_DEVICE=${_DIR_DEVICE#$_DIR_REPOROOT}
+_DIR_DEVICE=${_DIR_DEVICE#/}
 
 #
 # PICK PATCHES
