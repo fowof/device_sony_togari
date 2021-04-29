@@ -65,21 +65,6 @@ PRODUCT_COPY_FILES += \
 	vendor/sony/rhine-common/proprietary/etc/firmware/Signedrompatch_v21.bin:system/etc/firmware/Signedrompatch_v21.bin \
 	vendor/sony/rhine-common/proprietary/etc/firmware/Signedrompatch_v24.bin:system/etc/firmware/Signedrompatch_v24.bin \
 	vendor/sony/rhine-common/proprietary/etc/firmware/Signedrompatch_v30.bin:system/etc/firmware/Signedrompatch_v30.bin \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x45.img:system/etc/firmware/touch_module_id_0x45.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x48.img:system/etc/firmware/touch_module_id_0x48.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x49.img:system/etc/firmware/touch_module_id_0x49.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x4d.img:system/etc/firmware/touch_module_id_0x4d.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x4e.img:system/etc/firmware/touch_module_id_0x4e.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x4f.img:system/etc/firmware/touch_module_id_0x4f.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x50.img:system/etc/firmware/touch_module_id_0x50.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x51.img:system/etc/firmware/touch_module_id_0x51.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x57.img:system/etc/firmware/touch_module_id_0x57.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x59.img:system/etc/firmware/touch_module_id_0x59.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5a.img:system/etc/firmware/touch_module_id_0x5a.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5b.img:system/etc/firmware/touch_module_id_0x5b.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5c.img:system/etc/firmware/touch_module_id_0x5c.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5e.img:system/etc/firmware/touch_module_id_0x5e.img \
-	vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5f.img:system/etc/firmware/touch_module_id_0x5f.img \
 	vendor/sony/rhine-common/proprietary/etc/firmware/tzlibasb.b00:system/etc/firmware/tzlibasb.b00 \
 	vendor/sony/rhine-common/proprietary/etc/firmware/tzlibasb.b01:system/etc/firmware/tzlibasb.b01 \
 	vendor/sony/rhine-common/proprietary/etc/firmware/tzlibasb.b02:system/etc/firmware/tzlibasb.b02 \
@@ -542,6 +527,23 @@ PRODUCT_COPY_FILES += \
 # 	vendor/sony/rhine-common/proprietary/vendor/lib/libchromatix_skuf_ov5648_p5v23c_default_video.so:system/vendor/lib/libchromatix_skuf_ov5648_p5v23c_default_video.so \
 # 	vendor/sony/rhine-common/proprietary/vendor/lib/libchromatix_skuf_ov5648_p5v23c_preview.so:system/vendor/lib/libchromatix_skuf_ov5648_p5v23c_preview.so \
 # 	vendor/sony/rhine-common/proprietary/vendor/lib/libchromatix_skuf_ov5648_p5v23c_snapshot.so:system/vendor/lib/libchromatix_skuf_ov5648_p5v23c_snapshot.so
+
+# PRODUCT_COPY_FILES += \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x45.img:system/etc/firmware/touch_module_id_0x45.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x48.img:system/etc/firmware/touch_module_id_0x48.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x49.img:system/etc/firmware/touch_module_id_0x49.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x4d.img:system/etc/firmware/touch_module_id_0x4d.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x4e.img:system/etc/firmware/touch_module_id_0x4e.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x4f.img:system/etc/firmware/touch_module_id_0x4f.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x50.img:system/etc/firmware/touch_module_id_0x50.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x51.img:system/etc/firmware/touch_module_id_0x51.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x57.img:system/etc/firmware/touch_module_id_0x57.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x59.img:system/etc/firmware/touch_module_id_0x59.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5a.img:system/etc/firmware/touch_module_id_0x5a.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5b.img:system/etc/firmware/touch_module_id_0x5b.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5c.img:system/etc/firmware/touch_module_id_0x5c.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5e.img:system/etc/firmware/touch_module_id_0x5e.img \
+# vendor/sony/rhine-common/proprietary/etc/firmware/touch_module_id_0x5f.img:system/etc/firmware/touch_module_id_0x5f.img
 
 PRODUCT_PACKAGES += \
     libtime_genoff \
