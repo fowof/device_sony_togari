@@ -47,7 +47,7 @@ PRODUCT_COPY_FILES += \
 
 # Device specific init
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/init.device.rc:root/init.device.rc
+    $(LOCAL_PATH)/rootdir/init.device.rc:$(TARGET_COPY_OUT_ROOT)/init.device.rc
 
 TARGET_SYSTEM_PROP += device/sony/togari/system.prop
 
