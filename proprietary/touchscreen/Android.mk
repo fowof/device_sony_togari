@@ -78,6 +78,17 @@ LOCAL_MODULE_PATH   := $(TARGET_OUT_ETC)/firmware
 include $(BUILD_PREBUILT)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE        := touchfilter_tftype4_so
+LOCAL_MODULE_OWNER  := Sony Mobile
+LOCAL_SRC_FILES     := lib/touchfilter/tftype4.so
+LOCAL_MODULE_TAGS   := optional
+LOCAL_MODULE_STEM   := tftype4
+LOCAL_MODULE_SUFFIX := .so
+LOCAL_MODULE_CLASS  := ETC
+LOCAL_MODULE_PATH   := $(TARGET_OUT_SHARED_LIBRARIES)/touchfilter
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE        := usr_idc_max1187x_pen_0_idc
 LOCAL_MODULE_OWNER  := Sony Mobile
 LOCAL_SRC_FILES     := usr/idc/max1187x_pen_0.idc
