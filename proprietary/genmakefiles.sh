@@ -6,33 +6,27 @@ function _replace_path_with_name() {
 
   local path=$1
   local name=$2
-
-  [ -n "$name" -a -n "$path" ] || return 1
-
+  local rel=$_PATH
   local out='$(TARGET_OUT)'
-  local rel=
-  while true
-  do
-    [ "$_PATH" != "${_PATH#${path}}" -o "$_PATH"  = "$path" ] || break
+
+  if [ -n "$name" -a -n "$path" ]; then
+    [ "$_PATH" != "${_PATH#${path}}" -o "$_PATH"  = "$path" ] || return 1
 
     rel="${_PATH#${path}}"
-    rel="${rel#/}"
-
     out="\$(${name})"
-    if [ -n "$rel" ]; then
-      _PATH=${out}/${rel}
-    else
-      _PATH=$out
-    fi
+  fi
 
-    if [ -n "$rel" ]; then
-      _MODULE=$(echo "$rel" | sed 's/[\/\.]/_/g')_${_MODULE}
-    fi
+  rel="${rel#/}"
+  if [ -n "$rel" ]; then
+    _PATH=${out}/${rel}
+  else
+    _PATH=$out
+  fi
 
-    return
-  done
+  if [ -n "$rel" ]; then
+    _MODULE=$(echo "$rel" | sed 's/[\/\.]/_/g')_${_MODULE}
+  fi
 
-  return 1
 }
 
 function _cat_module() {
@@ -86,6 +80,7 @@ do
         _replace_path_with_name  xbin        TARGET_OUT_OPTIONAL_EXECUTABLES    && break
         _replace_path_with_name  lib         TARGET_OUT_SHARED_LIBRARIES        && break
         _replace_path_with_name  framework   TARGET_OUT_JAVA_LIBRARIES          && break
+        _replace_path_with_name
         break
       done
 
