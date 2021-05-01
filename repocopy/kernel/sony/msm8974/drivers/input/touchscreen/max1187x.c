@@ -702,9 +702,9 @@ static void report_down(struct data *ts,
 		ypixel = -ypixel;
 	}
 
-	z = (MXM_PRESSURE_SQRT_MAX >> 2) + max1187x_sqrt(z);
-	if (z > MXM_PRESSURE_SQRT_MAX)
-		z = MXM_PRESSURE_SQRT_MAX;
+	// z = (MXM_PRESSURE_SQRT_MAX >> 2) + max1187x_sqrt(z);
+	// if (z > MXM_PRESSURE_SQRT_MAX)
+	// 	z = MXM_PRESSURE_SQRT_MAX;
 	xsize = xpixel * (s16)xcell;
 	ysize = ypixel * (s16)ycell;
 	if (xsize < 0)
@@ -722,9 +722,11 @@ static void report_down(struct data *ts,
 			tool_type = MT_TOOL_PEN;
 	} else {
 		if (raw_tool_type == MXM_TOOL_GLOVE) {
-			if (ts->pdata->glove_enabled)
-				z += MXM_PRESSURE_SQRT_MAX + 1;
-			else
+			// if (ts->pdata->glove_enabled)
+			// 	z += MXM_PRESSURE_SQRT_MAX + 1;
+			// else
+			// 	return;
+			if (!(ts->pdata->glove_enabled))
 				return;
 		}
 		tool_type = MT_TOOL_FINGER;
@@ -2318,7 +2320,7 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 		ts->pdata->panel_margin_yl + ts->pdata->lcd_y - 1, 0, 0);
 	if (ts->pdata->pressure_enabled)
 		input_set_abs_params(ts->input_dev, ABS_MT_PRESSURE,
-				0, MXM_PRESSURE_SQRT_MAX, 0, 0);
+				0, 0xFFFF /* MXM_PRESSURE_SQRT_MAX */, 0, 0);
 	input_set_abs_params(ts->input_dev, ABS_MT_TOOL_TYPE,
 			0, ts->pdata->report_pen_as_finger ? MT_TOOL_FINGER :
 			MT_TOOL_PEN, 0, 0);
