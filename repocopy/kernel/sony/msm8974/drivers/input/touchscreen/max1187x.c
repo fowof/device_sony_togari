@@ -2300,7 +2300,7 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	}
 	snprintf(ts->phys, sizeof(ts->phys), "%s/input0",
 			dev_name(dev));
-	ts->input_dev->name = MAX1187X_TOUCH;
+	ts->input_dev->name = MAX1187X_NAME;
 	ts->input_dev->phys = ts->phys;
 	ts->input_dev->id.bustype = BUS_I2C;
 	__set_bit(EV_SYN, ts->input_dev->evbit);

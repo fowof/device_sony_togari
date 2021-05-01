@@ -21,10 +21,6 @@
 #define __MAX1187X_H
 
 #define MAX1187X_NAME   "max1187x"
-#define MAX1187X_TOUCH  MAX1187X_NAME "_touchscreen_0"
-#define MAX1187X_PEN  MAX1187X_NAME "_pen_0"
-#define MAX1187X_KEY    MAX1187X_NAME "_key_0"
-
 
 struct max1187x_pdata {
 	char	*vdd_supply_name;

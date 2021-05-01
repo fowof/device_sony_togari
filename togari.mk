@@ -44,6 +44,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
    $(LOCAL_PATH)/configs/thermanager.xml:$(TARGET_COPY_OUT_VENDOR)/etc/thermanager.xml
 
+# Touchscreen
+PRODUCT_COPY_FILES += \
+   $(LOCAL_PATH)/configs/max1187x.idc:$(TARGET_COPY_OUT_SYSTEM)/usr/idc/max1187x.idc
 
 # Device specific init
 PRODUCT_COPY_FILES += \
