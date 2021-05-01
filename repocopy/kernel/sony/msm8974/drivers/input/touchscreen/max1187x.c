@@ -672,48 +672,50 @@ static void report_down(struct data *ts,
 	struct max1187x_pdata *pdata = ts->pdata;
 	struct device *dev = &ts->client->dev;
 	struct input_dev *idev = ts->input_dev;
-	u32 xcell = pdata->lcd_x / pdata->num_sensor_x;
-	u32 ycell = pdata->lcd_y / pdata->num_sensor_y;
+	// u32 xcell = pdata->lcd_x / pdata->num_sensor_x;
+	// u32 ycell = pdata->lcd_y / pdata->num_sensor_y;
 	u16 x = e->x;
 	u16 y = e->y;
 	u16 z = e->z;
+	u16 size = e->area;
 	u16 raw_tool_type = e->tool_type;
 	u16 tool_type;
 	u16 id = e->finger_id;
 	u16 idbit = 1 << id;
-	s8 xpixel = e->xpixel;
-	s8 ypixel = e->ypixel;
-	u32 touch_major, touch_minor;
-	s16 xsize, ysize, orientation;
+	// s8 xpixel = e->xpixel;
+	// s8 ypixel = e->ypixel;
+	// u32 touch_major, touch_minor;
+	// s16 xsize, ysize, orientation;
 	bool valid;
 
 	if (pdata->coordinate_settings & MXM_SWAP_XY) {
 		swap(x, y);
-		swap(xpixel, ypixel);
+		// swap(xpixel, ypixel);
 	}
 	if (pdata->coordinate_settings & MXM_REVERSE_X) {
 		x = pdata->panel_margin_xl + pdata->lcd_x
 			+ pdata->panel_margin_xh - 1 - x;
-		xpixel = -xpixel;
+		// xpixel = -xpixel;
 	}
 	if (pdata->coordinate_settings & MXM_REVERSE_Y) {
 		y = pdata->panel_margin_yl + pdata->lcd_y
 			+ pdata->panel_margin_yh - 1 - y;
-		ypixel = -ypixel;
+		// ypixel = -ypixel;
 	}
 
 	// z = (MXM_PRESSURE_SQRT_MAX >> 2) + max1187x_sqrt(z);
 	// if (z > MXM_PRESSURE_SQRT_MAX)
 	// 	z = MXM_PRESSURE_SQRT_MAX;
-	xsize = xpixel * (s16)xcell;
-	ysize = ypixel * (s16)ycell;
-	if (xsize < 0)
-		xsize = -xsize;
-	if (ysize < 0)
-		ysize = -ysize;
-	orientation = (xsize > ysize) ? 0 : 90;
-	touch_major = (xsize > ysize) ? xsize : ysize;
-	touch_minor = (xsize > ysize) ? ysize : xsize;
+
+	// xsize = xpixel * (s16)xcell;
+	// ysize = ypixel * (s16)ycell;
+	// if (xsize < 0)
+	// 	xsize = -xsize;
+	// if (ysize < 0)
+	// 	ysize = -ysize;
+	// orientation = (xsize > ysize) ? 0 : 90;
+	// touch_major = (xsize > ysize) ? xsize : ysize;
+	// touch_minor = (xsize > ysize) ? ysize : xsize;
 
 	if (raw_tool_type == MXM_TOOL_PEN) {
 		if (ts->pdata->report_pen_as_finger)
@@ -741,21 +743,29 @@ static void report_down(struct data *ts,
 		input_report_abs(idev, ABS_MT_POSITION_Y, y);
 		if (pdata->pressure_enabled)
 			input_report_abs(idev, ABS_MT_PRESSURE, z);
-		if (pdata->orientation_enabled)
-			input_report_abs(idev, ABS_MT_ORIENTATION, orientation);
+		// if (pdata->orientation_enabled)
+		// 	input_report_abs(idev, ABS_MT_ORIENTATION, orientation);
 		if (pdata->size_enabled) {
-			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, touch_major);
-			input_report_abs(idev, ABS_MT_TOUCH_MINOR, touch_minor);
+			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, size);
+			// input_report_abs(idev, ABS_MT_TOUCH_MAJOR, touch_major);
+			// input_report_abs(idev, ABS_MT_TOUCH_MINOR, touch_minor);
 		}
 		input_mt_sync(idev);
 	}
-	dev_dbg(dev, "event: %s%s%s %u: [XY %4d %4d ][PMmO %4d %4d %4d %3d ]",
+	// dev_dbg(dev, "event: %s%s%s %u: [XY %4d %4d ][PMmO %4d %4d %4d %3d ]",
+	// 	!(ts->list_finger_ids & (1 << id)) ? "DOWN" : "MOVE",
+	// 	valid ? " " : "#",
+	// 	raw_tool_type == MXM_TOOL_FINGER ? "Finger" :
+	// 	raw_tool_type == MXM_TOOL_PEN ? "Stylus" :
+	// 	raw_tool_type == MXM_TOOL_GLOVE ? "Glove" : "*Unknown*",
+	// 	id, x, y, z, touch_major, touch_minor, orientation);
+	dev_dbg(dev, "event: %s%s%s %u: [XY %4d %4d ][PS %4d %3d ]",
 		!(ts->list_finger_ids & (1 << id)) ? "DOWN" : "MOVE",
 		valid ? " " : "#",
 		raw_tool_type == MXM_TOOL_FINGER ? "Finger" :
 		raw_tool_type == MXM_TOOL_PEN ? "Stylus" :
 		raw_tool_type == MXM_TOOL_GLOVE ? "Glove" : "*Unknown*",
-		id, x, y, z, touch_major, touch_minor, orientation);
+		id, x, y, z, size);
 }
 
 static void report_up(struct data *ts, int id,
@@ -2326,13 +2336,15 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 			MT_TOOL_PEN, 0, 0);
 	if (ts->pdata->size_enabled) {
 		input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR,
-				0, ts->pdata->lcd_x + ts->pdata->lcd_y, 0, 0);
-		input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MINOR,
-				0, ts->pdata->lcd_x + ts->pdata->lcd_y, 0, 0);
+				0, ts->pdata->num_sensor_x * ts->pdata->num_sensor_y, 0, 0);
+		// input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR,
+		// 		0, ts->pdata->lcd_x + ts->pdata->lcd_y, 0, 0);
+		// input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MINOR,
+		// 		0, ts->pdata->lcd_x + ts->pdata->lcd_y, 0, 0);
 	}
-	if (ts->pdata->orientation_enabled)
-		input_set_abs_params(ts->input_dev, ABS_MT_ORIENTATION,
-				-90, 90, 0, 0);
+	// if (ts->pdata->orientation_enabled)
+	// 	input_set_abs_params(ts->input_dev, ABS_MT_ORIENTATION,
+	// 			-90, 90, 0, 0);
 	if (ts->pdata->button_code0 != KEY_RESERVED)
 		set_bit(pdata->button_code0, ts->input_dev->keybit);
 	if (ts->pdata->button_code1 != KEY_RESERVED)
