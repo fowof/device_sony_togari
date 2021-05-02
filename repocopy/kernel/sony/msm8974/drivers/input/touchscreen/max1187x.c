@@ -225,6 +225,7 @@ enum maxim_tool_type {
 	MXM_TOOL_FINGER    = 0x02,
 	MXM_TOOL_GLOVE     = 0x03,
 };
+static const char mxm_tool_to_char[] = "?PFG";
 
 struct max1187x_packet_header {
 	u16 total_num;
@@ -648,31 +649,26 @@ static void report_touch(struct data *ts,
 
 	u16 x = e->x;
 	u16 y = e->y;
-	u16 z = e->z;
-	u16 size = e->area;
-	u16 raw_tool_type = e->tool_type;
-	u16 tool_type;
-	u16 id = e->finger_id;
-	u16 idbit = 1 << id;
+	u16 tool_type = e->tool_type;
 
-  switch (raw_tool_type) {
+  switch (tool_type) {
 		case MXM_TOOL_PEN:
 			if (ts->pdata->ignore_pen)
 				return;
 			tool_type = MT_TOOL_PEN;
 			break;
-		case:MXM_TOOL_GLOVE:
+		case MXM_TOOL_GLOVE:
 			if (!(ts->pdata->glove_enabled))
 				return;
 		case MXM_TOOL_FINGER:
-			tool_type = MT_TOOL_FINGER;
+		  tool_type = MT_TOOL_FINGER;
 			break;
     default:
-		  dev_err(dev, "Unknown tool type(%u)!", raw_tool_type);
+		  dev_err(dev, "Unknown tool type(%u)!", tool_type);
       return;
   }
 
-	ts->curr_finger_ids |= idbit;
+	ts->curr_finger_ids |= (1 << (e->finger_id));
 
 	if (pdata->coordinate_settings & MXM_SWAP_XY) {
 		swap(x, y);
@@ -687,24 +683,21 @@ static void report_touch(struct data *ts,
 	}
 
 	if (idev->users > 0) {
-		input_report_abs(idev, ABS_MT_TRACKING_ID, id);
+		input_report_abs(idev, ABS_MT_TRACKING_ID, e->finger_id);
 		if (!(ts->pdata->report_pen_as_finger))
 		  input_report_abs(idev, ABS_MT_TOOL_TYPE, tool_type);
 		input_report_abs(idev, ABS_MT_POSITION_X, x);
 		input_report_abs(idev, ABS_MT_POSITION_Y, y);
 		if (pdata->pressure_enabled)
-			input_report_abs(idev, ABS_MT_PRESSURE, z);
+			input_report_abs(idev, ABS_MT_PRESSURE, e->z);
 		if (pdata->size_enabled)
-			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, size);
+			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, e->area);
 		input_mt_sync(idev);
 	}
 
-	dev_dbg(dev, "event: %s%s%s %u: [XY %4d %4d ][PS %4d %3d ]",
-		!(ts->list_finger_ids & (1 << id)) ? "DOWN" : "MOVE",
+	dev_dbg(dev, "touch: %1s%c %2u: [XY %4d %4d][PS %4d %3d]",
 		(idev->users > 0) ? " " : "#",
-		raw_tool_type == MXM_TOOL_FINGER ? "Finger" :
-		raw_tool_type == MXM_TOOL_PEN ? "Stylus" :
-		raw_tool_type == MXM_TOOL_GLOVE ? "Glove" : "*Unknown*",
+		mxm_tool_to_char[e->tool_type],
 		id, x, y, z, size);
 }
 
