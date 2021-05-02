@@ -366,7 +366,6 @@ static int cmd_send(struct data *ts, u16 *buf, u16 len);
 static int rbcmd_send_receive(struct data *ts, u16 *cmd_buf,
 		u16 cmd_len, u16 rpt_id,
 		u16 *rpt_buf, u16 *rpt_len, u16 timeout);
-static u16 max1187x_sqrt(u32 num);
 static int reset_power(struct data *ts);
 static int max1187x_set_glove_locked(struct data *ts, int enable);
 static int max1187x_set_glove(struct data *ts, int enable);
@@ -604,32 +603,6 @@ static int send_mtp_command(struct data *ts, u16 *buf, u16 len)
 
 err_send_mtp_command:
 	return ret;
-}
-
-/* Integer math operations */
-u16 max1187x_sqrt(u32 num)
-{
-	u16 mask = 0x8000;
-	u16 guess = 0;
-	u32 prod = 0;
-
-	if (num < MXM_PRESSURE_Z_MIN_TO_SQRT)
-		return num;
-
-	while (mask) {
-		guess = guess ^ mask;
-		prod = guess * guess;
-		if (num < prod)
-			guess = guess ^ mask;
-		mask = mask>>1;
-	}
-	if (guess != 0xFFFF) {
-		prod = guess * guess;
-		if ((num - prod) > (prod + 2 * guess + 1 - num))
-			guess++;
-	}
-
-	return guess;
 }
 
 static void report_buttons(struct data *ts,
