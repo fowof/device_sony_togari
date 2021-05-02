@@ -2797,6 +2797,12 @@ static const struct dev_pm_ops max1187x_pm_ops = {
 	.suspend_noirq = suspend_noirq,
 };
 
+////
+//
+// BOOTLOADER
+//
+////
+
 static int bootloader_read_status_reg(struct data *ts, const u8 byteL,
 	const u8 byteH)
 {
