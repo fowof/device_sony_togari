@@ -95,7 +95,6 @@
 			button_code3 = <0>;
 			touch_pressure_enabled = <1>;
 			touch_size_enabled = <1>;
-			touch_orientation_enabled = <0>;
 			glove_enabled = <0>;
 			report_pen_as_finger = <0>;
       ignore_pen = <1>;

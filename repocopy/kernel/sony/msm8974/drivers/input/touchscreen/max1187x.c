@@ -1982,13 +1982,6 @@ static struct max1187x_pdata *max1187x_get_platdata_dt(struct device *dev)
 		goto err_max1187x_get_platdata_dt;
 	}
 
-	/* Parse touch_orientation_enabled */
-	if (of_property_read_u32(devnode, "touch_orientation_enabled",
-		&pdata->orientation_enabled)) {
-		dev_err(dev, "Failed to get property: touch_orientation_enabled\n");
-		goto err_max1187x_get_platdata_dt;
-	}
-
 	/* Parse glove_enabled */
 	if (of_property_read_u32(devnode, "glove_enabled",
 		&pdata->glove_enabled)) {
@@ -2245,9 +2238,6 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 		// input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MINOR,
 		// 		0, ts->pdata->lcd_x + ts->pdata->lcd_y, 0, 0);
 	}
-	// if (ts->pdata->orientation_enabled)
-	// 	input_set_abs_params(ts->input_dev, ABS_MT_ORIENTATION,
-	// 			-90, 90, 0, 0);
 	if (ts->pdata->button_code0 != KEY_RESERVED)
 		set_bit(pdata->button_code0, ts->input_dev->keybit);
 	if (ts->pdata->button_code1 != KEY_RESERVED)
