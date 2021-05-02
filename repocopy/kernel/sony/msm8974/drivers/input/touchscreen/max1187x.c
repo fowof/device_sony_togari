@@ -708,30 +708,6 @@ static void report_down(struct data *ts,
 		id, x, y, z, size);
 }
 
-static void report_up(struct data *ts, int id,
-			struct max1187x_touch_report_extended *e)
-{
-	struct device *dev = &ts->client->dev;
-	struct input_dev *idev = ts->input_dev;
-	u16 raw_tool_type = e->tool_type;
-	u16 idbit = 1 << id;
-	bool valid;
-
-	if (!(ts->list_finger_ids & idbit))
-		return;
-
-	valid = idev->users > 0;
-	if (valid)
-		input_mt_sync(idev);
-	dev_dbg(dev, "event: UP%s%s %u\n",
-		valid ? " " : "#",
-		raw_tool_type == MXM_TOOL_FINGER ? "Finger" :
-		raw_tool_type == MXM_TOOL_PEN ? "Stylus" :
-		raw_tool_type == MXM_TOOL_GLOVE ? "Glove" : "*Unknown*",
-		id);
-	ts->list_finger_ids &= ~idbit;
-}
-
 static void invalidate_all_fingers(struct data *ts)
 {
 	struct device *dev = &ts->client->dev;
@@ -870,12 +846,11 @@ static void process_report(struct data *ts, u16 *buf)
 		((u8 *)buf + sizeof(*header));
 	for (i = 0; i < header->touch_count; i++, reporte++)
 		report_down(ts, reporte);
-	for (i = 0; i < MXM_TOUCH_COUNT_MAX; i++) {
-		if (!(ts->curr_finger_ids & (1 << i)))
-			report_up(ts, i, reporte);
-	}
-	if (ts->input_dev->users)
+	if (ts->input_dev->users) {
+		if (ts->curr_finger_ids == 0)
+		  input_mt_sync(idev);
 		input_sync(ts->input_dev);
+	}
 	ts->list_finger_ids = ts->curr_finger_ids;
 end:
 	return;
