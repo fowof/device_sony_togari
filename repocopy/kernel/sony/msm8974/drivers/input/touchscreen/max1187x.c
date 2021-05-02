@@ -639,7 +639,7 @@ static void report_buttons(struct data *ts,
 	}
 }
 
-static void report_down(struct data *ts,
+static void report_touch(struct data *ts,
 			struct max1187x_touch_report_extended *e)
 {
 	struct max1187x_pdata *pdata = ts->pdata;
@@ -845,7 +845,7 @@ static void process_report(struct data *ts, u16 *buf)
 	reporte = (struct max1187x_touch_report_extended *)
 		((u8 *)buf + sizeof(*header));
 	for (i = 0; i < header->touch_count; i++, reporte++)
-		report_down(ts, reporte);
+		report_touch(ts, reporte);
 	if (ts->input_dev->users) {
 		if (ts->curr_finger_ids == 0)
 		  input_mt_sync(idev);
