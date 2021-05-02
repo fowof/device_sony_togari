@@ -708,18 +708,6 @@ static void report_touch(struct data *ts,
 		id, x, y, z, size);
 }
 
-static void invalidate_all_fingers(struct data *ts)
-{
-	struct device *dev = &ts->client->dev;
-
-	dev_dbg(dev, "event: UP all\n");
-	if (ts->input_dev->users) {
-		input_mt_sync(ts->input_dev);
-		input_sync(ts->input_dev);
-	}
-	ts->list_finger_ids = 0;
-}
-
 static void reinit_chip_settings(struct data *ts)
 {
 	u16 cmd_buf[] = {MXM_CMD_ID_SET_POWER_MODE,
@@ -836,9 +824,6 @@ static void process_report(struct data *ts, u16 *buf)
 		dev_err(dev, "Touch count (%u) out of bounds [0,10]!",
 				header->touch_count);
 		goto end;
-	} else if (!header->touch_count) {
-		invalidate_all_fingers(ts);
-		goto end;
 	}
 
 	ts->curr_finger_ids = 0;
@@ -929,7 +914,11 @@ static int reset_power(struct data *ts)
 {
 	int ret = -EINVAL;
 
-	invalidate_all_fingers(ts);
+	if (ts->input_dev->users) {
+		input_mt_sync(ts->input_dev);
+		input_sync(ts->input_dev);
+	}
+	ts->list_finger_ids = 0;
 
 	if (ts->pdata->gpio_reset) {
 		ret = gpio_direction_output(ts->pdata->gpio_reset,
