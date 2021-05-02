@@ -2330,13 +2330,13 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 		ts->pdata->panel_margin_yl + ts->pdata->lcd_y - 1, 0, 0);
 	if (ts->pdata->pressure_enabled)
 		input_set_abs_params(ts->input_dev, ABS_MT_PRESSURE,
-				0, 0xFFFF /* MXM_PRESSURE_SQRT_MAX */, 10, 0);
+				0, 0xFFFF /* MXM_PRESSURE_SQRT_MAX */, 0xFF, 0);
 	input_set_abs_params(ts->input_dev, ABS_MT_TOOL_TYPE,
 			0, ts->pdata->report_pen_as_finger ? MT_TOOL_FINGER :
 			MT_TOOL_PEN, 0, 0);
 	if (ts->pdata->size_enabled) {
 		input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR,
-				0, ts->pdata->num_sensor_x * ts->pdata->num_sensor_y, 0, 0);
+				0, ts->pdata->num_sensor_x * ts->pdata->num_sensor_y, 2, 0);
 		// input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR,
 		// 		0, ts->pdata->lcd_x + ts->pdata->lcd_y, 0, 0);
 		// input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MINOR,
