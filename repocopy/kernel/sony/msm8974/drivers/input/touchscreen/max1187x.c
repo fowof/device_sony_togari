@@ -672,8 +672,7 @@ static void report_down(struct data *ts,
 	struct max1187x_pdata *pdata = ts->pdata;
 	struct device *dev = &ts->client->dev;
 	struct input_dev *idev = ts->input_dev;
-	// u32 xcell = pdata->lcd_x / pdata->num_sensor_x;
-	// u32 ycell = pdata->lcd_y / pdata->num_sensor_y;
+
 	u16 x = e->x;
 	u16 y = e->y;
 	u16 z = e->z;
@@ -682,86 +681,55 @@ static void report_down(struct data *ts,
 	u16 tool_type;
 	u16 id = e->finger_id;
 	u16 idbit = 1 << id;
-	// s8 xpixel = e->xpixel;
-	// s8 ypixel = e->ypixel;
-	// u32 touch_major, touch_minor;
-	// s16 xsize, ysize, orientation;
-	bool valid;
+
+  switch (raw_tool_type) {
+		case MXM_TOOL_PEN:
+			if (ts->pdata->ignore_pen)
+				return;
+			tool_type = ts->pdata->report_pen_as_finger ?
+			  MT_TOOL_FINGER: MT_TOOL_PEN;
+			break;
+		case:MXM_TOOL_GLOVE:
+			if (!(ts->pdata->glove_enabled))
+				return;
+		case MXM_TOOL_FINGER:
+			tool_type = MT_TOOL_FINGER;
+			break;
+    default:
+		  dev_err(dev, "Unknown tool type(%u)!", raw_tool_type);
+      return;
+  }
+
+	ts->curr_finger_ids |= idbit;
 
 	if (pdata->coordinate_settings & MXM_SWAP_XY) {
 		swap(x, y);
-		// swap(xpixel, ypixel);
 	}
 	if (pdata->coordinate_settings & MXM_REVERSE_X) {
 		x = pdata->panel_margin_xl + pdata->lcd_x
 			+ pdata->panel_margin_xh - 1 - x;
-		// xpixel = -xpixel;
 	}
 	if (pdata->coordinate_settings & MXM_REVERSE_Y) {
 		y = pdata->panel_margin_yl + pdata->lcd_y
 			+ pdata->panel_margin_yh - 1 - y;
-		// ypixel = -ypixel;
 	}
 
-	// z = (MXM_PRESSURE_SQRT_MAX >> 2) + max1187x_sqrt(z);
-	// if (z > MXM_PRESSURE_SQRT_MAX)
-	// 	z = MXM_PRESSURE_SQRT_MAX;
-
-	// xsize = xpixel * (s16)xcell;
-	// ysize = ypixel * (s16)ycell;
-	// if (xsize < 0)
-	// 	xsize = -xsize;
-	// if (ysize < 0)
-	// 	ysize = -ysize;
-	// orientation = (xsize > ysize) ? 0 : 90;
-	// touch_major = (xsize > ysize) ? xsize : ysize;
-	// touch_minor = (xsize > ysize) ? ysize : xsize;
-
-	if (raw_tool_type == MXM_TOOL_PEN) {
-		if (ts->pdata->report_pen_as_finger)
-			tool_type = MT_TOOL_FINGER;
-		else
-			tool_type = MT_TOOL_PEN;
-	} else {
-		if (raw_tool_type == MXM_TOOL_GLOVE) {
-			// if (ts->pdata->glove_enabled)
-			// 	z += MXM_PRESSURE_SQRT_MAX + 1;
-			// else
-			// 	return;
-			if (!(ts->pdata->glove_enabled))
-				return;
-		}
-		tool_type = MT_TOOL_FINGER;
-	}
-	valid = idev->users > 0;
-	ts->curr_finger_ids |= idbit;
-
-	if (valid) {
+	if (idev->users > 0) {
 		input_report_abs(idev, ABS_MT_TRACKING_ID, id);
 		input_report_abs(idev, ABS_MT_TOOL_TYPE, tool_type);
 		input_report_abs(idev, ABS_MT_POSITION_X, x);
 		input_report_abs(idev, ABS_MT_POSITION_Y, y);
 		if (pdata->pressure_enabled)
 			input_report_abs(idev, ABS_MT_PRESSURE, z);
-		// if (pdata->orientation_enabled)
-		// 	input_report_abs(idev, ABS_MT_ORIENTATION, orientation);
 		if (pdata->size_enabled) {
 			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, size);
-			// input_report_abs(idev, ABS_MT_TOUCH_MAJOR, touch_major);
-			// input_report_abs(idev, ABS_MT_TOUCH_MINOR, touch_minor);
 		}
 		input_mt_sync(idev);
 	}
-	// dev_dbg(dev, "event: %s%s%s %u: [XY %4d %4d ][PMmO %4d %4d %4d %3d ]",
-	// 	!(ts->list_finger_ids & (1 << id)) ? "DOWN" : "MOVE",
-	// 	valid ? " " : "#",
-	// 	raw_tool_type == MXM_TOOL_FINGER ? "Finger" :
-	// 	raw_tool_type == MXM_TOOL_PEN ? "Stylus" :
-	// 	raw_tool_type == MXM_TOOL_GLOVE ? "Glove" : "*Unknown*",
-	// 	id, x, y, z, touch_major, touch_minor, orientation);
+
 	dev_dbg(dev, "event: %s%s%s %u: [XY %4d %4d ][PS %4d %3d ]",
 		!(ts->list_finger_ids & (1 << id)) ? "DOWN" : "MOVE",
-		valid ? " " : "#",
+		(idev->users > 0) ? " " : "#",
 		raw_tool_type == MXM_TOOL_FINGER ? "Finger" :
 		raw_tool_type == MXM_TOOL_PEN ? "Stylus" :
 		raw_tool_type == MXM_TOOL_GLOVE ? "Glove" : "*Unknown*",
@@ -2102,6 +2070,12 @@ static struct max1187x_pdata *max1187x_get_platdata_dt(struct device *dev)
 	if (of_property_read_u32(devnode, "report_pen_as_finger",
 		&pdata->report_pen_as_finger)) {
 		dev_warn(dev, "no report_pen_as_finger config\n");
+	}
+
+	/* Parse ignore_pen */
+	if (of_property_read_u32(devnode, "ignore_pen",
+		&pdata->ignore_pen)) {
+		dev_warn(dev, "no ignore_pen config\n");
 	}
 
 	/* Parse wakeup_gesture_support */
