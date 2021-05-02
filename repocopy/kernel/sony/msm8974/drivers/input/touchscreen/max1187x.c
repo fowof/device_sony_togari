@@ -659,8 +659,7 @@ static void report_down(struct data *ts,
 		case MXM_TOOL_PEN:
 			if (ts->pdata->ignore_pen)
 				return;
-			tool_type = ts->pdata->report_pen_as_finger ?
-			  MT_TOOL_FINGER: MT_TOOL_PEN;
+			tool_type = MT_TOOL_PEN;
 			break;
 		case:MXM_TOOL_GLOVE:
 			if (!(ts->pdata->glove_enabled))
@@ -689,14 +688,14 @@ static void report_down(struct data *ts,
 
 	if (idev->users > 0) {
 		input_report_abs(idev, ABS_MT_TRACKING_ID, id);
-		input_report_abs(idev, ABS_MT_TOOL_TYPE, tool_type);
+		if (!(ts->pdata->report_pen_as_finger))
+		  input_report_abs(idev, ABS_MT_TOOL_TYPE, tool_type);
 		input_report_abs(idev, ABS_MT_POSITION_X, x);
 		input_report_abs(idev, ABS_MT_POSITION_Y, y);
 		if (pdata->pressure_enabled)
 			input_report_abs(idev, ABS_MT_PRESSURE, z);
-		if (pdata->size_enabled) {
+		if (pdata->size_enabled)
 			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, size);
-		}
 		input_mt_sync(idev);
 	}
 
