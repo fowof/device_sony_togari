@@ -698,7 +698,7 @@ static void report_touch(struct data *ts,
 	dev_dbg(dev, "touch: %1s%c %2u: [XY %4d %4d][PS %4d %3d]",
 		(idev->users > 0) ? " " : "#",
 		mxm_tool_to_char[e->tool_type],
-		id, x, y, z, size);
+		e->finger_id, x, y, e->z, e->area);
 }
 
 static void reinit_chip_settings(struct data *ts)
@@ -826,7 +826,7 @@ static void process_report(struct data *ts, u16 *buf)
 		report_touch(ts, reporte);
 	if (ts->input_dev->users) {
 		if (ts->curr_finger_ids == 0)
-		  input_mt_sync(idev);
+		  input_mt_sync(ts->input_dev);
 		input_sync(ts->input_dev);
 	}
 	ts->list_finger_ids = ts->curr_finger_ids;
