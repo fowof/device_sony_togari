@@ -849,8 +849,10 @@ static irqreturn_t irq_handler_soft(int irq, void *context)
 		propagate_report(ts, 0, ts->rx_packet);
 	} else {
 		if (down_timeout(&ts->reset_sem,
-		    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) == 0)
+		    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) == 0) {
 			reset_power(ts);
+			up(&ts->reset_sem);
+		}
 		else
 			dev_err(&ts->client->dev, "irq reset timeout\n");
 	}
@@ -913,27 +915,24 @@ static int reset_power(struct data *ts)
 	}
 	ts->list_finger_ids = 0;
 
-	if (ts->pdata->gpio_reset) {
+  do {
+    if (!(ts->pdata->gpio_reset)) break;
 		ret = gpio_direction_output(ts->pdata->gpio_reset,
 					    ts->pdata->reset_l2h ? 0 : 1);
-		if (ret)
-			goto exit;
-	}
-	usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
-	if (ts->pdata->gpio_reset) {
+		if (ret) break;
+		usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
 		ret = gpio_direction_output(ts->pdata->gpio_reset,
 					    ts->pdata->reset_l2h ? 1 : 0);
-		if (ret)
-			goto exit;
-	}
-	usleep_range(MXM_CHIP_RESET_US, MXM_CHIP_RESET_US + MXM_WAIT_MIN_US);
+		if (ret) break;
+		usleep_range(MXM_CHIP_RESET_US,
+			MXM_CHIP_RESET_US + MXM_WAIT_MIN_US);
+	} while(0);
 
-	dev_dbg(&ts->client->dev, "power on reset\n");
-exit:
-	if (ret) {
-		dev_err(&ts->client->dev, "Failed to power on reset\n");
-		up(&ts->reset_sem);
-	}
+  if (ret == 0)
+	  dev_dbg(&ts->client->dev, "power on reset\n");
+	else
+	  dev_err(&ts->client->dev, "Failed to power on reset!\n");
+
 	return ret;
 }
 
@@ -942,22 +941,18 @@ static ssize_t power_on_reset_store(struct device *dev,
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct data *ts = i2c_get_clientdata(client);
-	int ret;
 
 	if (down_timeout(&ts->reset_sem,
-	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
+	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) == 0) {
+		mutex_lock(&ts->i2c_mutex);
+		if (reset_power(ts) == 0)
+			dev_info(dev, "hw reset occured\n");
+		mutex_unlock(&ts->i2c_mutex);
+		up(&ts->reset_sem);
+	} else {
 		dev_err(&ts->client->dev, "irq reset timeout\n");
-		goto exit;
 	}
 
-	mutex_lock(&ts->i2c_mutex);
-	ret = reset_power(ts);
-	mutex_unlock(&ts->i2c_mutex);
-	if (ret)
-		goto exit;
-
-	dev_info(dev, "hw reset occured\n");
-exit:
 	return count;
 }
 
@@ -2587,8 +2582,7 @@ static void set_resume_mode(struct data *ts)
 
 	ts->is_suspended = false;
 
-	if (!ts->pdata->enable_resume_por)
-		up(&ts->reset_sem);
+	up(&ts->reset_sem);
 
 	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
 
