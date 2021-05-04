@@ -844,17 +844,12 @@ static irqreturn_t irq_handler_soft(int irq, void *context)
 	mutex_lock(&ts->i2c_mutex);
 
 	ret = read_mtp_report(ts, ts->rx_packet);
-	if (!ret) {
+	if (ret == 0) {
 		process_report(ts, ts->rx_packet);
 		propagate_report(ts, 0, ts->rx_packet);
 	} else {
-		if (down_timeout(&ts->reset_sem,
-		    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) == 0) {
-			reset_power(ts);
-			up(&ts->reset_sem);
-		}
-		else
-			dev_err(&ts->client->dev, "irq reset timeout\n");
+		reset_power(ts);
+		dev_err(&ts->client->dev, "%s: read mtp failed\n", __func__);
 	}
 
 	mutex_unlock(&ts->i2c_mutex);
@@ -909,29 +904,36 @@ static int reset_power(struct data *ts)
 {
 	int ret = -EINVAL;
 
-	if (ts->input_dev->users) {
-		input_mt_sync(ts->input_dev);
-		input_sync(ts->input_dev);
-	}
-	ts->list_finger_ids = 0;
+	if (down_timeout(&ts->reset_sem,
+	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
+    dev_err(&ts->client->dev, "down reset_sem timeout\n");
+	} else {
+		if (ts->input_dev->users) {
+			input_mt_sync(ts->input_dev);
+			input_sync(ts->input_dev);
+		}
+		ts->list_finger_ids = 0;
 
-  do {
-    if (!(ts->pdata->gpio_reset)) break;
-		ret = gpio_direction_output(ts->pdata->gpio_reset,
-					    ts->pdata->reset_l2h ? 0 : 1);
-		if (ret) break;
-		usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
-		ret = gpio_direction_output(ts->pdata->gpio_reset,
-					    ts->pdata->reset_l2h ? 1 : 0);
-		if (ret) break;
-		usleep_range(MXM_CHIP_RESET_US,
-			MXM_CHIP_RESET_US + MXM_WAIT_MIN_US);
-	} while(0);
+		do {
+	    if (!(ts->pdata->gpio_reset)) break;
+			ret = gpio_direction_output(ts->pdata->gpio_reset,
+						    ts->pdata->reset_l2h ? 0 : 1);
+			if (ret) break;
+			usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
+			ret = gpio_direction_output(ts->pdata->gpio_reset,
+						    ts->pdata->reset_l2h ? 1 : 0);
+			if (ret) break;
+			usleep_range(MXM_CHIP_RESET_US,
+				MXM_CHIP_RESET_US + MXM_WAIT_MIN_US);
+		} while(0);
+
+		up(&ts->reset_sem);
+  }
 
   if (ret == 0)
-	  dev_dbg(&ts->client->dev, "power on reset\n");
+	  dev_dbg(&ts->client->dev, "hrad reset complete\n");
 	else
-	  dev_err(&ts->client->dev, "Failed to power on reset!\n");
+	  dev_err(&ts->client->dev, "Failed to hard reset!\n");
 
 	return ret;
 }
@@ -942,16 +944,9 @@ static ssize_t power_on_reset_store(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct data *ts = i2c_get_clientdata(client);
 
-	if (down_timeout(&ts->reset_sem,
-	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) == 0) {
-		mutex_lock(&ts->i2c_mutex);
-		if (reset_power(ts) == 0)
-			dev_info(dev, "hw reset occured\n");
-		mutex_unlock(&ts->i2c_mutex);
-		up(&ts->reset_sem);
-	} else {
-		dev_err(&ts->client->dev, "irq reset timeout\n");
-	}
+	mutex_lock(&ts->i2c_mutex);
+	reset_power(ts);
+	mutex_unlock(&ts->i2c_mutex);
 
 	return count;
 }
@@ -2561,12 +2556,6 @@ static void set_resume_mode(struct data *ts)
 {
 	dev_info(&ts->client->dev, "%s\n", __func__);
 
-	if (down_timeout(&ts->reset_sem,
-	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
-		dev_err(&ts->client->dev, "irq reset timeout\n");
-		return;
-	}
-
 	vreg_suspend(ts, false);
 	usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
 
@@ -2581,8 +2570,6 @@ static void set_resume_mode(struct data *ts)
 	}
 
 	ts->is_suspended = false;
-
-	up(&ts->reset_sem);
 
 	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
 
