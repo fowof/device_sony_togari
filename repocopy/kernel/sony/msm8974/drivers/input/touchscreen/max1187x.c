@@ -275,13 +275,6 @@ struct max1187x_touch_report_extended {
 	u16 ymax;
 };
 
-struct report_reader {
-	u16 report_id;
-	u16 reports_passed;
-	struct semaphore sem;
-	int status;
-};
-
 struct data {
 	struct max1187x_pdata *pdata;
 	struct i2c_client *client;
@@ -306,10 +299,7 @@ struct data {
 	struct mutex fw_mutex;
 	struct mutex i2c_mutex;
 	struct mutex report_mutex;
-	struct semaphore report_sem;
 	struct semaphore reset_sem;
-	struct report_reader report_readers[MXM_REPORT_READERS_MAX];
-	u8 report_readers_outstanding;
 
 	u16 cmd_buf[MXM_CMD_LEN_MAX];
 	u16 cmd_len;
@@ -359,9 +349,6 @@ static int bootloader_set_byte_mode(struct data *ts);
 static int bootloader_erase_flash(struct data *ts);
 static int bootloader_write_flash(struct data *ts, const u8 *image, u16 length);
 
-static void propagate_report(struct data *ts, int status, u16 *report);
-static int get_report(struct data *ts, u16 report_id, ulong timeout);
-static void release_report(struct data *ts);
 static int cmd_send_locked(struct data *ts, u16 *buf, u16 len);
 static int cmd_send(struct data *ts, u16 *buf, u16 len);
 static int rbcmd_send_receive(struct data *ts, u16 *cmd_buf,
@@ -844,7 +831,7 @@ static irqreturn_t irq_handler_soft(int irq, void *context)
 	ret = read_mtp_report(ts, ts->rx_packet);
 	if (ret == 0) {
 		process_report(ts, ts->rx_packet);
-		propagate_report(ts, 0, ts->rx_packet);
+		process_rbcmd(ts, ts->rx_packet);
 	} else {
 		dev_err(&ts->client->dev, "%s: read mtp failed\n", __func__);
 	}
@@ -1187,39 +1174,6 @@ static ssize_t command_store(struct device *dev, struct device_attribute *attr,
 	return ++count;
 }
 
-static ssize_t report_read(struct file *file, struct kobject *kobj,
-	struct bin_attribute *attr, char *buf, loff_t off, size_t count)
-{
-	struct i2c_client *client = kobj_to_i2c_client(kobj);
-	struct data *ts = i2c_get_clientdata(client);
-	int printed, i, offset = 0, payload;
-	int full_packet;
-	int num_term_char;
-
-	if (get_report(ts, 0xFFFF, 0xFFFFFFFF))
-		return 0;
-
-	payload = ts->rx_report_len;
-	full_packet = payload;
-	num_term_char = 2; /* number of term char */
-	if (count < (4 * full_packet + num_term_char))
-		return -EIO;
-	if (count > (4 * full_packet + num_term_char))
-		count = 4 * full_packet + num_term_char;
-
-	for (i = 1; i <= payload; i++) {
-		printed = snprintf(&buf[offset], PAGE_SIZE, "%04X\n",
-			ts->rx_report[i]);
-		if (printed <= 0)
-			return -EIO;
-		offset += printed - 1;
-	}
-	snprintf(&buf[offset], PAGE_SIZE, ",\n");
-	release_report(ts);
-
-	return count;
-}
-
 static int max1187x_set_glove_locked(struct data *ts, int enable)
 {
 	u16 cmd_buf[] = {MXM_CMD_ID_SET_GLOVE_MODE,
@@ -1316,10 +1270,6 @@ static struct device_attribute dev_attrs[] = {
 	__ATTR(wakeup_gesture, S_IRUGO | S_IWUSR,
 			wakeup_gesture_show, wakeup_gesture_store)
 };
-
-static struct bin_attribute dev_attr_report = {
-		.attr = {.name = "report", .mode = S_IRUGO},
-		.read = report_read };
 
 static int create_sysfs_entries(struct data *ts)
 {
@@ -2138,7 +2088,6 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	mutex_init(&ts->fw_mutex);
 	mutex_init(&ts->i2c_mutex);
 	mutex_init(&ts->report_mutex);
-	sema_init(&ts->report_sem, 1);
 	sema_init(&ts->sema_rbcmd, 1);
 	sema_init(&ts->reset_sem, 1);
 	ts->button0 = 0;
@@ -2202,10 +2151,6 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	if (ts->pdata->size_enabled) {
 		input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR,
 				0, ts->pdata->num_sensor_x * ts->pdata->num_sensor_y, 2, 0);
-		// input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR,
-		// 		0, ts->pdata->lcd_x + ts->pdata->lcd_y, 0, 0);
-		// input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MINOR,
-		// 		0, ts->pdata->lcd_x + ts->pdata->lcd_y, 0, 0);
 	}
 	if (ts->pdata->button_code0 != KEY_RESERVED)
 		set_bit(pdata->button_code0, ts->input_dev->keybit);
@@ -2270,12 +2215,6 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 		goto err_device_init_irq;
 	}
 
-	if (device_create_bin_file(&client->dev, &dev_attr_report) < 0) {
-		dev_err(dev, "failed to create sysfs file [report]");
-		goto err_device_init_sysfs_remove_group;
-	}
-	ts->sysfs_created++;
-
 	/* create symlink */
 	parent = ts->input_dev->dev.kobj.parent;
 	ret = sysfs_create_link(parent, &client->dev.kobj, MAX1187X_NAME);
@@ -2312,7 +2251,7 @@ static void shutdown(struct i2c_client *client)
 	if (ts == NULL)
 		return;
 
-	propagate_report(ts, -1, NULL);
+	process_rbcmd(ts, NULL);
 
 	if (ts->pdata->wakeup_gesture_support)
 		device_init_wakeup(&client->dev, 0);
@@ -2343,32 +2282,35 @@ static void shutdown(struct i2c_client *client)
 }
 
 /* Commands */
-static void process_rbcmd(struct data *ts)
+static void process_rbcmd(struct data *ts, u16 *report)
 {
 	dev_dbg(&ts->client->dev, "%s: Enter\n", __func__);
-	if (!ts->rbcmd_waiting)
-		goto exit;
-	if (ts->rbcmd_report_id != ts->rx_report[1])
-		goto exit;
-	if (ts->rx_report_len > *ts->rbcmd_rx_report_len) {
-		dev_dbg(&ts->client->dev, "%s: Report length mismatch: "\
-						"received (%d) "
-						"expected (%d) words, "
-						"header (0x%04X)\n",
-						__func__, ts->rx_report_len,
-						*ts->rbcmd_rx_report_len,
-						ts->rbcmd_report_id);
-		goto exit;
-	}
 
-	ts->rbcmd_received = 1;
-	memcpy(ts->rbcmd_rx_report, ts->rx_report, (ts->rx_report_len + 1)<<1);
-	*ts->rbcmd_rx_report_len = ts->rx_report_len;
-	wake_up_interruptible(&ts->waitqueue_rbcmd);
+	mutex_lock(&ts->report_mutex);
 
-exit:
+  do {
+		if (report && combine_multipacketreport(ts, report) != 0) break;
+		if (!ts->rbcmd_waiting) break;
+		if (ts->rbcmd_report_id != ts->rx_report[1]) break;
+		if (ts->rx_report_len > *ts->rbcmd_rx_report_len) {
+			dev_dbg(&ts->client->dev, "%s: Report length mismatch: "\
+							"received (%d) "
+							"expected (%d) words, "
+							"header (0x%04X)\n",
+							__func__, ts->rx_report_len,
+							*ts->rbcmd_rx_report_len,
+							ts->rbcmd_report_id);
+			break;
+		}
+		ts->rbcmd_received = 1;
+		memcpy(ts->rbcmd_rx_report, ts->rx_report, (ts->rx_report_len + 1)<<1);
+		*ts->rbcmd_rx_report_len = ts->rx_report_len;
+		wake_up_interruptible(&ts->waitqueue_rbcmd);
+	} while(0);
+
+	mutex_unlock(&ts->report_mutex);
+
 	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
-	return;
 }
 
 static int combine_multipacketreport(struct data *ts, u16 *report)
@@ -2408,90 +2350,6 @@ static int combine_multipacketreport(struct data *ts, u16 *report)
 			return -EIO;
 	}
 	return -EIO;
-}
-
-static void propagate_report(struct data *ts, int status, u16 *report)
-{
-	int i, ret;
-
-	down(&ts->report_sem);
-	mutex_lock(&ts->report_mutex);
-
-	if (report) {
-		ret = combine_multipacketreport(ts, report);
-		if (ret) {
-			up(&ts->report_sem);
-			mutex_unlock(&ts->report_mutex);
-			return;
-		}
-	}
-	process_rbcmd(ts);
-
-	for (i = 0; i < MXM_REPORT_READERS_MAX; i++) {
-		if (!status) {
-			if (ts->report_readers[i].report_id == 0xFFFF
-				|| (ts->rx_report[1]
-				&& ts->report_readers[i].report_id
-				== ts->rx_report[1])) {
-				up(&ts->report_readers[i].sem);
-				ts->report_readers[i].reports_passed++;
-				ts->report_readers_outstanding++;
-			}
-		} else {
-			if (ts->report_readers[i].report_id) {
-				ts->report_readers[i].status = status;
-				up(&ts->report_readers[i].sem);
-			}
-		}
-	}
-	if (!ts->report_readers_outstanding)
-		up(&ts->report_sem);
-	mutex_unlock(&ts->report_mutex);
-}
-
-static int get_report(struct data *ts, u16 report_id, ulong timeout)
-{
-	int i, ret, status;
-
-	mutex_lock(&ts->report_mutex);
-	for (i = 0; i < MXM_REPORT_READERS_MAX; i++)
-		if (!ts->report_readers[i].report_id)
-			break;
-	if (i == MXM_REPORT_READERS_MAX) {
-		mutex_unlock(&ts->report_mutex);
-		dev_err(&ts->client->dev, "maximum readers reached");
-		return -EBUSY;
-	}
-	ts->report_readers[i].report_id = report_id;
-	sema_init(&ts->report_readers[i].sem, 1);
-	down(&ts->report_readers[i].sem);
-	ts->report_readers[i].status = 0;
-	ts->report_readers[i].reports_passed = 0;
-	mutex_unlock(&ts->report_mutex);
-
-	if (timeout == 0xFFFFFFFF)
-		ret = down_interruptible(&ts->report_readers[i].sem);
-	else
-		ret = down_timeout(&ts->report_readers[i].sem,
-			(timeout * HZ) / 1000);
-
-	mutex_lock(&ts->report_mutex);
-	if (ret && ts->report_readers[i].reports_passed > 0)
-		if (--ts->report_readers_outstanding == 0)
-			up(&ts->report_sem);
-	status = ts->report_readers[i].status;
-	ts->report_readers[i].report_id = 0;
-	mutex_unlock(&ts->report_mutex);
-
-	return (!status) ? ret : status;
-}
-
-static void release_report(struct data *ts)
-{
-	mutex_lock(&ts->report_mutex);
-	if (--ts->report_readers_outstanding == 0)
-		up(&ts->report_sem);
-	mutex_unlock(&ts->report_mutex);
 }
 
 static void set_suspend_mode(struct data *ts)
