@@ -848,7 +848,6 @@ static irqreturn_t irq_handler_soft(int irq, void *context)
 		process_report(ts, ts->rx_packet);
 		propagate_report(ts, 0, ts->rx_packet);
 	} else {
-		reset_power(ts);
 		dev_err(&ts->client->dev, "%s: read mtp failed\n", __func__);
 	}
 
