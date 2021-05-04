@@ -367,7 +367,7 @@ static int cmd_send(struct data *ts, u16 *buf, u16 len);
 static int rbcmd_send_receive(struct data *ts, u16 *cmd_buf,
 		u16 cmd_len, u16 rpt_id,
 		u16 *rpt_buf, u16 *rpt_len, u16 timeout);
-static int reset_power(struct data *ts);
+static int hrst(struct data *ts);
 static int max1187x_set_glove_locked(struct data *ts, int enable);
 static int max1187x_set_glove(struct data *ts, int enable);
 
@@ -880,7 +880,7 @@ irq_handler_hard_complete:
 	return IRQ_HANDLED;
 }
 
-static int reset_power(struct data *ts)
+static int hrst(struct data *ts)
 {
 	int ret = -EINVAL;
 
@@ -918,20 +918,20 @@ static int reset_power(struct data *ts)
 	return ret;
 }
 
-static ssize_t power_on_reset_store(struct device *dev,
+static ssize_t hrst_store(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct data *ts = i2c_get_clientdata(client);
 
 	mutex_lock(&ts->i2c_mutex);
-	reset_power(ts);
+	hrst(ts);
 	mutex_unlock(&ts->i2c_mutex);
 
 	return count;
 }
 
-static int sreset(struct data *ts)
+static int srst(struct data *ts)
 {
 	u16 cmd_buf[] = {MXM_CMD_ID_RESET_SYSTEM, MXM_ZERO_SIZE_CMD};
 	u16 rpt_buf[10], rpt_len;
@@ -947,13 +947,13 @@ static int sreset(struct data *ts)
 	return ret;
 }
 
-static ssize_t sreset_store(struct device *dev, struct device_attribute *attr,
+static ssize_t srst_store(struct device *dev, struct device_attribute *attr,
 	const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct data *ts = i2c_get_clientdata(client);
 
-	sreset(ts);
+	srst(ts);
 
 	return count;
 }
@@ -1295,8 +1295,8 @@ static ssize_t wakeup_gesture_store(struct device *dev,
 }
 
 static struct device_attribute dev_attrs[] = {
-	__ATTR(por, S_IWUSR, NULL, power_on_reset_store),
-	__ATTR(sreset, S_IWUSR, NULL, sreset_store),
+	__ATTR(hrst, S_IWUSR, NULL, hrst_store),
+	__ATTR(srst, S_IWUSR, NULL, srst_store),
 	__ATTR(fw_update, S_IWUSR, NULL, fw_update_store),
 	__ATTR(irq_count, S_IRUGO | S_IWUSR, irq_count_show,
 		irq_count_store),
@@ -2234,7 +2234,7 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	dev_info(&ts->client->dev, "(INIT): IRQ handler OK");
 
 	/* reset chip to clear any missed reports */
-	sreset(ts);
+	srst(ts);
 
 	/* collect controller ID and configuration ID data from firmware   */
 	ret = read_chip_data(ts);
