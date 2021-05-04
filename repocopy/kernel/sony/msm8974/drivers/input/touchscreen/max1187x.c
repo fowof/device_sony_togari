@@ -885,9 +885,7 @@ static int hrst(struct data *ts)
 	int ret = -EINVAL;
 
 	if (down_timeout(&ts->reset_sem,
-	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
-    dev_err(&ts->client->dev, "down reset_sem timeout\n");
-	} else {
+	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) == 0) {
 		if (ts->input_dev->users) {
 			input_mt_sync(ts->input_dev);
 			input_sync(ts->input_dev);
@@ -908,10 +906,12 @@ static int hrst(struct data *ts)
 		} while(0);
 
 		up(&ts->reset_sem);
+	} else {
+		dev_err(&ts->client->dev, "down reset_sem timeout\n");
   }
 
   if (ret == 0)
-	  dev_dbg(&ts->client->dev, "hrad reset complete\n");
+	  dev_dbg(&ts->client->dev, "hard reset complete\n");
 	else
 	  dev_err(&ts->client->dev, "Failed to hard reset!\n");
 
