@@ -886,6 +886,10 @@ static int hrst(struct data *ts)
 
 	if (down_timeout(&ts->reset_sem,
 	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) == 0) {
+
+		disable_irq(ts->client->irq);
+		mutex_lock(&ts->i2c_mutex);
+
 		if (ts->input_dev->users) {
 			input_mt_sync(ts->input_dev);
 			input_sync(ts->input_dev);
@@ -904,6 +908,9 @@ static int hrst(struct data *ts)
 			usleep_range(MXM_CHIP_RESET_US,
 				MXM_CHIP_RESET_US + MXM_WAIT_MIN_US);
 		} while(0);
+
+		mutex_unlock(&ts->i2c_mutex);
+		enable_irq(ts->client->irq);
 
 		up(&ts->reset_sem);
 	} else {
@@ -924,9 +931,7 @@ static ssize_t hrst_store(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct data *ts = i2c_get_clientdata(client);
 
-	mutex_lock(&ts->i2c_mutex);
 	hrst(ts);
-	mutex_unlock(&ts->i2c_mutex);
 
 	return count;
 }
