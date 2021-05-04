@@ -358,6 +358,8 @@ static int hrst(struct data *ts);
 static int max1187x_set_glove_locked(struct data *ts, int enable);
 static int max1187x_set_glove(struct data *ts, int enable);
 
+static void process_rbcmd(struct data *ts, u16 *report);
+
 /* I2C communication */
 static int i2c_rx_bytes(struct data *ts, u8 *buf, u16 len)
 {
@@ -796,7 +798,8 @@ static void process_report(struct data *ts, u16 *buf)
 	}
 	ts->framecounter = header->framecounter;
 
-	report_buttons(ts, header);
+	if (!(ts->pdata->ignore_button))
+		report_buttons(ts, header);
 
 	if (header->touch_count > MXM_TOUCH_COUNT_MAX) {
 		dev_err(dev, "Touch count (%u) out of bounds [0,10]!",
@@ -817,6 +820,77 @@ static void process_report(struct data *ts, u16 *buf)
 	ts->list_finger_ids = ts->curr_finger_ids;
 end:
 	return;
+}
+
+static int combine_multipacketreport(struct data *ts, u16 *report)
+{
+	u16 packet_header = report[0];
+	u8 packet_seq_num = BYTEH(packet_header);
+	u8 packet_size = BYTEL(packet_header);
+	u16 total_packets, this_packet_num, offset;
+	static u16 packet_seq_combined;
+
+	if (packet_seq_num == MXM_ONE_PACKET_RPT) {
+		memcpy(ts->rx_report, report, (packet_size + 1) << 1);
+		ts->rx_report_len = packet_size;
+		packet_seq_combined = 1;
+		return 0;
+	}
+
+	total_packets = HI_NIBBLE(packet_seq_num);
+	this_packet_num = LO_NIBBLE(packet_seq_num);
+
+	if (this_packet_num == 1) {
+		if (report[1] == MXM_RPT_ID_TOUCH_RAW_IMAGE) {
+			ts->rx_report_len = report[2] + 2;
+			packet_seq_combined = 1;
+			memcpy(ts->rx_report, report, (packet_size + 1) << 1);
+			return -EAGAIN;
+		} else {
+			return -EIO;
+		}
+	} else if (this_packet_num == packet_seq_combined + 1) {
+		packet_seq_combined++;
+		offset = (this_packet_num - 1) * MXM_RPT_MAX_WORDS_PER_PKT + 1;
+		memcpy(ts->rx_report + offset, report + 1, packet_size << 1);
+		if (total_packets == this_packet_num)
+			return 0;
+		else
+			return -EIO;
+	}
+	return -EIO;
+}
+
+/* Commands */
+static void process_rbcmd(struct data *ts, u16 *report)
+{
+	dev_dbg(&ts->client->dev, "%s: Enter\n", __func__);
+
+	mutex_lock(&ts->report_mutex);
+
+  do {
+		if (report && combine_multipacketreport(ts, report) != 0) break;
+		if (!ts->rbcmd_waiting) break;
+		if (ts->rbcmd_report_id != ts->rx_report[1]) break;
+		if (ts->rx_report_len > *ts->rbcmd_rx_report_len) {
+			dev_dbg(&ts->client->dev, "%s: Report length mismatch: "\
+							"received (%d) "
+							"expected (%d) words, "
+							"header (0x%04X)\n",
+							__func__, ts->rx_report_len,
+							*ts->rbcmd_rx_report_len,
+							ts->rbcmd_report_id);
+			break;
+		}
+		ts->rbcmd_received = 1;
+		memcpy(ts->rbcmd_rx_report, ts->rx_report, (ts->rx_report_len + 1)<<1);
+		*ts->rbcmd_rx_report_len = ts->rx_report_len;
+		wake_up_interruptible(&ts->waitqueue_rbcmd);
+	} while(0);
+
+	mutex_unlock(&ts->report_mutex);
+
+	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
 }
 
 static irqreturn_t irq_handler_soft(int irq, void *context)
@@ -1919,6 +1993,12 @@ static struct max1187x_pdata *max1187x_get_platdata_dt(struct device *dev)
 		dev_warn(dev, "no ignore_pen config\n");
 	}
 
+	/* Parse ignore_button */
+	if (of_property_read_u32(devnode, "ignore_button",
+		&pdata->ignore_button)) {
+		dev_warn(dev, "no ignore_button config\n");
+	}
+
 	/* Parse wakeup_gesture_support */
 	if (of_property_read_u32(devnode, "wakeup_gesture_support",
 		&pdata->wakeup_gesture_support)) {
@@ -2224,8 +2304,6 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	dev_info(dev, "(INIT): Done\n");
 	return 0;
 
-err_device_init_sysfs_remove_group:
-	remove_sysfs_entries(ts);
 err_device_init_irq:
 #ifdef CONFIG_FB
 	fb_unregister_client(&ts->fb_notif);
@@ -2258,9 +2336,6 @@ static void shutdown(struct i2c_client *client)
 
 	remove_sysfs_entries(ts);
 
-	if (ts->sysfs_created && ts->sysfs_created--)
-		device_remove_bin_file(&client->dev, &dev_attr_report);
-
 #ifdef CONFIG_FB
 	if (fb_unregister_client(&ts->fb_notif))
 		dev_err(dev, "Error occurred while unregistering fb_notifier.");
@@ -2281,76 +2356,6 @@ static void shutdown(struct i2c_client *client)
 	kzfree(ts);
 }
 
-/* Commands */
-static void process_rbcmd(struct data *ts, u16 *report)
-{
-	dev_dbg(&ts->client->dev, "%s: Enter\n", __func__);
-
-	mutex_lock(&ts->report_mutex);
-
-  do {
-		if (report && combine_multipacketreport(ts, report) != 0) break;
-		if (!ts->rbcmd_waiting) break;
-		if (ts->rbcmd_report_id != ts->rx_report[1]) break;
-		if (ts->rx_report_len > *ts->rbcmd_rx_report_len) {
-			dev_dbg(&ts->client->dev, "%s: Report length mismatch: "\
-							"received (%d) "
-							"expected (%d) words, "
-							"header (0x%04X)\n",
-							__func__, ts->rx_report_len,
-							*ts->rbcmd_rx_report_len,
-							ts->rbcmd_report_id);
-			break;
-		}
-		ts->rbcmd_received = 1;
-		memcpy(ts->rbcmd_rx_report, ts->rx_report, (ts->rx_report_len + 1)<<1);
-		*ts->rbcmd_rx_report_len = ts->rx_report_len;
-		wake_up_interruptible(&ts->waitqueue_rbcmd);
-	} while(0);
-
-	mutex_unlock(&ts->report_mutex);
-
-	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
-}
-
-static int combine_multipacketreport(struct data *ts, u16 *report)
-{
-	u16 packet_header = report[0];
-	u8 packet_seq_num = BYTEH(packet_header);
-	u8 packet_size = BYTEL(packet_header);
-	u16 total_packets, this_packet_num, offset;
-	static u16 packet_seq_combined;
-
-	if (packet_seq_num == MXM_ONE_PACKET_RPT) {
-		memcpy(ts->rx_report, report, (packet_size + 1) << 1);
-		ts->rx_report_len = packet_size;
-		packet_seq_combined = 1;
-		return 0;
-	}
-
-	total_packets = HI_NIBBLE(packet_seq_num);
-	this_packet_num = LO_NIBBLE(packet_seq_num);
-
-	if (this_packet_num == 1) {
-		if (report[1] == MXM_RPT_ID_TOUCH_RAW_IMAGE) {
-			ts->rx_report_len = report[2] + 2;
-			packet_seq_combined = 1;
-			memcpy(ts->rx_report, report, (packet_size + 1) << 1);
-			return -EAGAIN;
-		} else {
-			return -EIO;
-		}
-	} else if (this_packet_num == packet_seq_combined + 1) {
-		packet_seq_combined++;
-		offset = (this_packet_num - 1) * MXM_RPT_MAX_WORDS_PER_PKT + 1;
-		memcpy(ts->rx_report + offset, report + 1, packet_size << 1);
-		if (total_packets == this_packet_num)
-			return 0;
-		else
-			return -EIO;
-	}
-	return -EIO;
-}
 
 static void set_suspend_mode(struct data *ts)
 {

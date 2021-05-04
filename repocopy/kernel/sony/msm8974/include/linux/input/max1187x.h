@@ -27,7 +27,6 @@ struct max1187x_pdata {
 	u32	gpio_tirq;
 	u32	gpio_reset;
 	u32	reset_l2h;
-	u32	enable_resume_por;
 	u32	defaults_allow;
 	u32	default_config_id;
 	u32	default_chip_id;
@@ -51,6 +50,7 @@ struct max1187x_pdata {
 	u32	glove_enabled;
 	u32	report_pen_as_finger;
 	u32 ignore_pen;
+	u32 ignore_button;
 	u32	wakeup_gesture_support;
 	u32	wakeup_gesture_timeout;
 };

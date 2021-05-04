@@ -97,6 +97,7 @@
 			glove_enabled = <0>;
 			report_pen_as_finger = <0>;
       ignore_pen = <1>;
+      ignore_button = <1>;
 			wakeup_gesture_support = <0>;
 			wakeup_gesture_timeout = <0>;
 		};
