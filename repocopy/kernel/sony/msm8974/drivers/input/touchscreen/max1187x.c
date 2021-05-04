@@ -795,8 +795,6 @@ static void process_report(struct data *ts, u16 *buf)
 		if (status_report->value & MXM_STATUS_EXT_RESET ||
 		    status_report->value & MXM_STATUS_SOFT_RESET) {
 			reinit_chip_settings(ts);
-			if (status_report->value & MXM_STATUS_EXT_RESET)
-				up(&ts->reset_sem);
 		}
 		goto end;
 	}
@@ -1811,11 +1809,6 @@ static struct max1187x_pdata *max1187x_get_platdata_dt(struct device *dev)
 	if (of_property_read_u32(devnode, "reset_l2h", &pdata->reset_l2h))
 		dev_info(dev, "unused reset_l2h should be set to zero\n");
 
-	/* Parse enable_resume_por */
-	if (of_property_read_u32(devnode, "enable_resume_por",
-		&pdata->enable_resume_por))
-		dev_info(dev, "unused enable_resume_por should be set to zero\n");
-
 	/* Parse defaults_allow */
 	if (of_property_read_u32(devnode, "defaults_allow",
 		&pdata->defaults_allow)) {
@@ -2507,7 +2500,7 @@ static void set_suspend_mode(struct data *ts)
 
 	if (down_timeout(&ts->reset_sem,
 	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
-		dev_err(&ts->client->dev, "irq reset timeout\n");
+		dev_err(&ts->client->dev, "down reset_sem timeout\n");
 		return;
 	}
 
@@ -2537,20 +2530,22 @@ static void set_resume_mode(struct data *ts)
 {
 	dev_info(&ts->client->dev, "%s\n", __func__);
 
+	if (down_timeout(&ts->reset_sem,
+	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
+		dev_err(&ts->client->dev, "down reset_sem timeout\n");
+		return;
+	}
+
 	vreg_suspend(ts, false);
 	usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
 
-	if (ts->pdata->enable_resume_por) {
-		disable_irq(ts->client->irq);
-		reset_power(ts);
-		enable_irq(ts->client->irq);
-	} else {
-		mutex_lock(&ts->i2c_mutex);
-		reinit_chip_settings(ts);
-		mutex_unlock(&ts->i2c_mutex);
-	}
+	mutex_lock(&ts->i2c_mutex);
+	reinit_chip_settings(ts);
+	mutex_unlock(&ts->i2c_mutex);
 
 	ts->is_suspended = false;
+
+	up(&ts->reset_sem);
 
 	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
 
