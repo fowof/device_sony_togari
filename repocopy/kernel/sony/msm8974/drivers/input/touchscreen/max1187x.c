@@ -882,23 +882,6 @@ irq_handler_hard_complete:
 	return IRQ_HANDLED;
 }
 
-static ssize_t i2c_reset_store(struct device *dev,
-	struct device_attribute *attr, const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	struct data *ts = i2c_get_clientdata(client);
-	int ret;
-
-	ret = bootloader_exit(ts);
-	if (ret) {
-		dev_err(dev, "Failed to do i2c reset.");
-		goto exit;
-	}
-	dev_info(dev, "i2c reset occured\n");
-exit:
-	return count;
-}
-
 static int reset_power(struct data *ts)
 {
 	int ret = -EINVAL;
@@ -1314,7 +1297,6 @@ static ssize_t wakeup_gesture_store(struct device *dev,
 }
 
 static struct device_attribute dev_attrs[] = {
-	__ATTR(i2c_reset, S_IWUSR, NULL, i2c_reset_store),
 	__ATTR(por, S_IWUSR, NULL, power_on_reset_store),
 	__ATTR(sreset, S_IWUSR, NULL, sreset_store),
 	__ATTR(fw_update, S_IWUSR, NULL, fw_update_store),
