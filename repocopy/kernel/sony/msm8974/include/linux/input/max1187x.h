@@ -45,10 +45,10 @@ struct max1187x_pdata {
 	u32	button_code1;
 	u32	button_code2;
 	u32	button_code3;
-	u32	pressure_enabled;
-	u32	size_enabled;
+	u32	report_pressure;
+	u32	report_size;
 	u32	glove_enabled;
-	u32	report_pen_as_finger;
+	u32	report_tool_type;
 	u32 ignore_pen;
 	u32 ignore_button;
 	u32	wakeup_gesture_support;

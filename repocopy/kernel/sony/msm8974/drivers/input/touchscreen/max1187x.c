@@ -673,13 +673,13 @@ static void report_touch(struct data *ts,
 
 	if (idev->users > 0) {
 		input_report_abs(idev, ABS_MT_TRACKING_ID, e->finger_id);
-		if (!(ts->pdata->report_pen_as_finger))
+		if (ts->pdata->report_tool_type)
 		  input_report_abs(idev, ABS_MT_TOOL_TYPE, tool_type);
 		input_report_abs(idev, ABS_MT_POSITION_X, x);
 		input_report_abs(idev, ABS_MT_POSITION_Y, y);
-		if (pdata->pressure_enabled)
+		if (pdata->report_pressure)
 			input_report_abs(idev, ABS_MT_PRESSURE, e->z);
-		if (pdata->size_enabled)
+		if (pdata->report_size)
 			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, e->area);
 		input_mt_sync(idev);
 	}
@@ -1961,17 +1961,17 @@ static struct max1187x_pdata *max1187x_get_platdata_dt(struct device *dev)
 		goto err_max1187x_get_platdata_dt;
 	}
 
-	/* Parse touch_pressure_enabled */
-	if (of_property_read_u32(devnode, "touch_pressure_enabled",
-		&pdata->pressure_enabled)) {
-		dev_err(dev, "Failed to get property: touch_pressure_enabled\n");
+	/* Parse report_pressure */
+	if (of_property_read_u32(devnode, "report_pressure",
+		&pdata->report_pressure)) {
+		dev_err(dev, "Failed to get property: report_pressure\n");
 		goto err_max1187x_get_platdata_dt;
 	}
 
-	/* Parse touch_size_enabled */
-	if (of_property_read_u32(devnode, "touch_size_enabled",
-		&pdata->size_enabled)) {
-		dev_err(dev, "Failed to get property: touch_size_enabled\n");
+	/* Parse report_size */
+	if (of_property_read_u32(devnode, "report_size",
+		&pdata->report_size)) {
+		dev_err(dev, "Failed to get property: report_size\n");
 		goto err_max1187x_get_platdata_dt;
 	}
 
@@ -1981,10 +1981,10 @@ static struct max1187x_pdata *max1187x_get_platdata_dt(struct device *dev)
 		dev_warn(dev, "no glove_enabled config\n");
 	}
 
-	/* Parse report_pen_as_finger */
-	if (of_property_read_u32(devnode, "report_pen_as_finger",
-		&pdata->report_pen_as_finger)) {
-		dev_warn(dev, "no report_pen_as_finger config\n");
+	/* Parse report_tool_type */
+	if (of_property_read_u32(devnode, "report_tool_type",
+		&pdata->report_tool_type)) {
+		dev_warn(dev, "no report_tool_type config\n");
 	}
 
 	/* Parse ignore_pen */
@@ -2222,13 +2222,13 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	input_set_abs_params(ts->input_dev, ABS_MT_POSITION_Y,
 		ts->pdata->panel_margin_yl,
 		ts->pdata->panel_margin_yl + ts->pdata->lcd_y - 1, 0, 0);
-	if (ts->pdata->pressure_enabled)
+	if (ts->pdata->report_pressure)
 		input_set_abs_params(ts->input_dev, ABS_MT_PRESSURE,
 				0, 0xFFFF /* MXM_PRESSURE_SQRT_MAX */, 0xFF, 0);
 	input_set_abs_params(ts->input_dev, ABS_MT_TOOL_TYPE,
-			0, ts->pdata->report_pen_as_finger ? MT_TOOL_FINGER :
+			0, ts->pdata->report_tool_type ? MT_TOOL_FINGER :
 			MT_TOOL_PEN, 0, 0);
-	if (ts->pdata->size_enabled) {
+	if (ts->pdata->report_size) {
 		input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR,
 				0, ts->pdata->num_sensor_x * ts->pdata->num_sensor_y, 2, 0);
 	}

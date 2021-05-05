@@ -92,10 +92,10 @@
 			button_code1 = <0>;
 			button_code2 = <0>;
 			button_code3 = <0>;
-			touch_pressure_enabled = <1>;
-			touch_size_enabled = <1>;
+			report_pressure = <1>;
+			report_size = <1>;
 			glove_enabled = <0>;
-			report_pen_as_finger = <0>;
+			report_tool_type = <0>;
       ignore_pen = <1>;
       ignore_button = <1>;
 			wakeup_gesture_support = <0>;
