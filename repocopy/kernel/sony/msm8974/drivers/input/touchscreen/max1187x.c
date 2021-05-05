@@ -1724,8 +1724,7 @@ static int vreg_suspend(struct data *ts, bool enable)
 
 	if (IS_ERR(ts->vreg_touch_vdd)) {
 		dev_err(dev, "vreg_touch_vdd is not initialized\n");
-		rc = -ENODEV;
-		goto exit;
+		return -ENODEV;
 	}
 
 	if (enable)
@@ -1738,14 +1737,12 @@ static int vreg_suspend(struct data *ts, bool enable)
 	if (rc < 0) {
 		dev_err(dev, "%s: vdd: set mode (%s) failed, rc=%d\n",
 				__func__, (enable ? "LPM" : "HPM"), rc);
-		goto exit;
-	} else {
-		dev_dbg(dev, "%s: vdd: set mode (%s) ok, new mode=%d\n",
-			__func__, (enable ? "LPM" : "HPM"), rc);
-		rc = 0;
+		return rc;
 	}
-exit:
-	return rc;
+
+	dev_dbg(dev, "%s: vdd: set mode (%s) ok, new mode=%d\n",
+		__func__, (enable ? "LPM" : "HPM"), rc);
+	return 0;
 }
 
 static int vreg_configure(struct data *ts, bool enable)
