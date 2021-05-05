@@ -336,7 +336,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 				unsigned long event, void *data);
 static void notify_resume(struct work_struct *work);
 static void notify_suspend(struct work_struct *work);
-#endif
+#endif // CONFIG_FB
 
 static int vreg_configure(struct data *ts, bool enable);
 
@@ -918,27 +918,23 @@ static irqreturn_t irq_handler_soft(int irq, void *context)
 
 static irqreturn_t irq_handler_hard(int irq, void *context)
 {
-	struct data *ts = (struct data *) context;
+	struct data *ts = (struct data *)context;
+  irqreturn_t ret = IRQ_HANDLED;
 
 	dev_dbg(&ts->client->dev, "%s: Enter\n", __func__);
 
-	if (gpio_get_value(ts->pdata->gpio_tirq))
-		goto irq_handler_hard_complete;
+	if (!gpio_get_value(ts->pdata->gpio_tirq)) {
+		ts->irq_count++;
 
-	ts->irq_count++;
-
-	if (ts->pm_suspended) {
-		ts->irq_on_suspend = true;
-		dev_dbg(&ts->client->dev, "irq while suspended\n");
-		goto irq_handler_hard_complete;
+		if (ts->pm_suspended) {
+			ts->irq_on_suspend = true;
+			dev_dbg(&ts->client->dev, "irq while suspended\n");
+		} else
+			ret = IRQ_WAKE_THREAD;
 	}
 
 	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
-	return IRQ_WAKE_THREAD;
-
-irq_handler_hard_complete:
-	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
-	return IRQ_HANDLED;
+	return ret;
 }
 
 static int hrst(struct data *ts)
