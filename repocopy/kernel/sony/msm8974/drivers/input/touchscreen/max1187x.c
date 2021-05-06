@@ -2211,10 +2211,10 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	ts->list_finger_ids = 0;
 	input_set_abs_params(ts->input_dev, ABS_MT_POSITION_X,
 		ts->pdata->panel_margin_xl,
-		ts->pdata->panel_margin_xl + ts->pdata->lcd_x - 1, 0, 0);
+		ts->pdata->panel_margin_xl + ts->pdata->lcd_x - 1, 2, 0);
 	input_set_abs_params(ts->input_dev, ABS_MT_POSITION_Y,
 		ts->pdata->panel_margin_yl,
-		ts->pdata->panel_margin_yl + ts->pdata->lcd_y - 1, 0, 0);
+		ts->pdata->panel_margin_yl + ts->pdata->lcd_y - 1, 2, 0);
 	if (ts->pdata->report_pressure)
 		input_set_abs_params(ts->input_dev, ABS_MT_PRESSURE,
 				0, 0xFFFF /* MXM_PRESSURE_SQRT_MAX */, 0xFF, 0);
