@@ -15,6 +15,10 @@
 # Inherit the fusion-common definitions
 $(call inherit-product, device/sony/rhine-common/rhine.mk)
 
+# PRODUCT_SHIPPING_API_LEVEL indicates the first api level,
+# device has been commercially launched on.
+PRODUCT_SHIPPING_API_LEVEL := 18
+
 DEVICE_PACKAGE_OVERLAYS += device/sony/togari/overlay
 
 # These are the hardware-specific features

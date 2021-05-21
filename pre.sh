@@ -14,18 +14,14 @@ _DIR_DEVICE=${_DIR_DEVICE#$_DIR_REPOROOT}
 _DIR_DEVICE=${_DIR_DEVICE#/}
 
 #
-# PICK PATCHES
+# APPLY PATCHES
 #
 
-repopick -f 295701 # Add product_launched_with_j_mr2 for JellyBean 4.3
-repopick 292788 # adb
-repopick -g https://gerrit.aicp-rom.com 104259 # rhine-common
-repopick -g https://gerrit.aicp-rom.com 106145 106147 # 8974-common
-repopick -g https://gerrit.aicp-rom.com 105818 -P system/core
-repopick -g https://gerrit.aicp-rom.com 105646 -P frameworks/native
-repopick -g https://gerrit.aicp-rom.com 105644 -P build/make
-repopick -g https://gerrit.aicp-rom.com 105645 -P build/soong
-repopick -g https://gerrit.aicp-rom.com 105817 -P vendor/lineage
+cd "${_DIR_REPOROOT}/device/sony/msm8974-common"
+git fetch http://gerrit.aicp-rom.com/AICP/device_sony_msm8974-common refs/changes/93/109793/1 && git checkout FETCH_HEAD
+cd "${_DIR_REPOROOT}/device/sony/rhine-common"
+git fetch http://gerrit.aicp-rom.com/AICP/device_sony_rhine-common refs/changes/31/109531/5 && git checkout FETCH_HEAD
+cd "${_DIR_REPOROOT}"
 
 #
 # COPY FILES
