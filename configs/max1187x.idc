@@ -5,7 +5,7 @@
 touch.deviceType = touchScreen
 
 # this is default value for touchScreen
-# touch.orientationAware = 1
+touch.orientationAware = 1
 
 # reported raw size value seems to be a count of sensors
 # which responds to a touch. according to device tree,
@@ -14,3 +14,5 @@ touch.size.calibration = area
 touch.size.scale = 2160.0
 
 touch.pressure.calibration = physical
+
+touch.orientation.calibration = none
