@@ -1,4 +1,4 @@
-/* include/linux/input/max1187x.c
+/* drivers/input/touchscreen/max1187x.c
  *
  * Copyright (c) 2013 Maxim Integrated Products, Inc.
  * Copyright (c) 2013-2014 Sony Mobile Communications AB.
@@ -31,7 +31,7 @@
 #include <linux/notifier.h>
 #endif
 
-#include "max1187x.h"
+#include "max1187x_ts.h"
 #include "max1187x_msg.h"
 
 static int mxm_of_property_read_u32(struct max1187x_touchscreen * ts, const char * propname, u32 * out, u32 min, u32 max) {
@@ -71,7 +71,6 @@ static int mxm_of_property_read_string(struct max1187x_touchscreen * ts, const c
 static irqreturn_t irq_handler_hard(int irq, void *context)
 {
 	struct max1187x_touchscreen *ts = (struct max1187x_touchscreen *)context;
-  struct device * dev = &ts->i2c.client->dev;
   int rc;
 
 	mutex_lock(&ts->gpio.mutex);
@@ -86,7 +85,7 @@ static irqreturn_t irq_handler_soft(int irq, void *context)
 	struct max1187x_touchscreen *ts = (struct max1187x_touchscreen *)context;
   struct device *dev = &(ts->i2c.client->dev);
 
-  struct mxm_packet pkt = {MXM_OFFSET_RPT,};
+  struct mxm_packet_buffer pkt = {MXM_OFFSET_RPT,};
 
   if (mxm_read_packet(ts, &pkt))
     dev_err(dev, "%s: read packet failed\n", __func__);
@@ -310,9 +309,9 @@ static int mxm_ts_init_input_device(struct max1187x_touchscreen * ts)
 	input_set_abs_params(idev, ABS_MT_TRACKING_ID,
 		0, MXM_TOUCH_COUNT_MAX, 0, 0);
 	input_set_abs_params(idev, ABS_MT_POSITION_X,
-		0, ts->pdata->lcd_x - 1, 3, 0);
+		0, ts->pdata->lcd_x - 1, 0, 0);
 	input_set_abs_params(idev, ABS_MT_POSITION_Y,
-		0, ts->pdata->lcd_y - 1, 3, 0);
+		0, ts->pdata->lcd_y - 1, 0, 0);
 	if (ts->pdata->report_type)
 		input_set_abs_params(idev, ABS_MT_TOOL_TYPE,
 			0, ts->pdata->ignore_pen ? MT_TOOL_FINGER : MT_TOOL_PEN, 0, 0);
@@ -321,7 +320,7 @@ static int mxm_ts_init_input_device(struct max1187x_touchscreen * ts)
 			0, 0xFFFF, 0xFF, 0);
 	if (ts->pdata->report_size)
 		input_set_abs_params(idev, ABS_MT_TOUCH_MAJOR,
-			0, ts->pdata->num_sensor_x * ts->pdata->num_sensor_y, 2, 0);
+			0, ts->pdata->num_sensor_x * ts->pdata->num_sensor_y, 0, 0);
 
 	if (input_register_device(idev)) {
 		dev_err(dev, "Failed to register touch input device");
@@ -359,7 +358,7 @@ static int mxm_ts_init_irq(struct max1187x_touchscreen * ts)
 
 	rc = -EIO;
 	do {
-		if (mxm_send_command(ts, MXM_CMD_RESET))
+		if (mxm_send_command(ts, MXM_CMD_RESET_SYSTEM))
 		  break;
 		if (mxm_send_command(ts, MXM_CMD_GET_FIRMWARE_VERSION))
 		  break;
@@ -672,7 +671,7 @@ static int max1187x_suspend(struct device *dev)
   int rc;
 
 	if (!ts->is_suspended) {
-    dev_info(dev, "SUSPEND\n");
+
 		if (mxm_send_command(ts, MXM_CMD_SLEEP))
 			dev_err(dev, "Failed to set sleep mode\n");
 
@@ -682,6 +681,11 @@ static int max1187x_suspend(struct device *dev)
 		usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
 
 		ts->is_suspended = true;
+
+    input_mt_sync(ts->input_dev);
+    input_sync(ts->input_dev);
+
+    dev_dbg(dev, "suspend end\n");
 	}
 
 	return 0;
@@ -694,27 +698,31 @@ static int max1187x_resume(struct device *dev)
 	int rc;
 
   if (ts->is_suspended) {
-    dev_info(dev, "RESUME\n");
 
-		rc = regulator_set_optimum_mode(ts->vdd_supply,
-							MXM_VREG_LOAD_UA_HIGH);
-
+		rc = regulator_set_optimum_mode(ts->vdd_supply, MXM_VREG_LOAD_UA_HIGH);
 		usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
 
 		enable_irq(client->irq);
 
 		if (mxm_send_command(ts, MXM_CMD_AUTO_ACTIVE))
-			dev_err(dev, "Failed to set auto active mode");
+			dev_err(dev, "Failed to wake up");
+    if (mxm_send_command(ts, MXM_CMD_RESET_SYSTEM))
+      dev_err(dev, "Failed to reset system");
+    if (mxm_send_command(ts, MXM_CMD_RESET_BASELINE))
+      dev_err(dev, "Failed to reset baseline");
 		if (mxm_send_command(ts, MXM_CMD_SET_TOUCH_REPORT_EXTENDED))
 			dev_err(dev, "Failed to set touch report mode");
-		if (ts->pdata->enable_glove)
-		  rc = mxm_send_command(ts, MXM_CMD_ENABLE_GLOVE);
-		else
-		  rc = mxm_send_command(ts, MXM_CMD_DISABLE_GLOVE);
+		// if (ts->pdata->enable_glove)
+		//   rc = mxm_send_command(ts, MXM_CMD_ENABLE_GLOVE);
+		// else
+		//   rc = mxm_send_command(ts, MXM_CMD_DISABLE_GLOVE);
 
-		mxm_send_command(ts, MXM_CMD_RESET);
+    input_mt_sync(ts->input_dev);
+    input_sync(ts->input_dev);
 
 		ts->is_suspended = false;
+
+    dev_dbg(dev, "resume end\n");
 	}
 
 	return 0;

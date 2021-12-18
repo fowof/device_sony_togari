@@ -1,4 +1,4 @@
-/* include/linux/input/max1187x.c
+/* drivers/input/touchscreen/max1187x_msg.c
  *
  * Copyright (c) 2013 Maxim Integrated Products, Inc.
  * Copyright (c) 2013-2014 Sony Mobile Communications AB.
@@ -108,7 +108,7 @@ static int mxm_i2c_read_words(struct max1187x_touchscreen *ts, u16 *buf, u16 add
 //
 //
 
-int mxm_read_packet(struct max1187x_touchscreen *ts, struct mxm_packet * pkt)
+int mxm_read_packet(struct max1187x_touchscreen *ts, struct mxm_packet_buffer * pkt)
 {
   struct device *dev = &ts->i2c.client->dev;
 	int rc = -EIO;
@@ -131,7 +131,7 @@ int mxm_read_packet(struct max1187x_touchscreen *ts, struct mxm_packet * pkt)
 	return rc;
 }
 
-int mxm_send_packet(struct max1187x_touchscreen *ts, struct mxm_packet *pkt)
+int mxm_send_packet(struct max1187x_touchscreen *ts, struct mxm_packet_buffer *pkt)
 {
 	int rc;
 	mutex_lock(&ts->i2c.mutex);
@@ -174,7 +174,7 @@ int mxm_send_command(struct max1187x_touchscreen * ts, enum mxm_command cmd)
       buf.msghdr.id   = MXM_CMD_ID_SET_TOUCH_RPT_MODE;
       buf.value[0]    = MXM_TOUCH_REPORT_MODE_EXT;
       break;
-    case MXM_CMD_RESET:
+    case MXM_CMD_RESET_SYSTEM:
       buf.msghdr.id   = MXM_CMD_ID_RESET_SYSTEM;
 			reply_id        = MXM_RPT_ID_SYSTEM_STATUS;
       break;
@@ -186,6 +186,11 @@ int mxm_send_command(struct max1187x_touchscreen * ts, enum mxm_command cmd)
       buf.msghdr.id   = MXM_CMD_ID_SET_POWER_MODE;
       buf.value[0]    = MXM_PWR_AUTO_ACTIVE;
       break;
+		case MXM_CMD_RESET_BASELINE:
+			buf.msghdr.id   = MXM_CMD_ID_SET_BASELINE;
+			buf.value[0]    = 0;
+			reply_id        = MXM_RPT_ID_BASELINE;
+		  break;
 		case MXM_CMD_ENABLE_GLOVE:
 			buf.msghdr.id   = MXM_CMD_ID_SET_GLOVE_MODE;
 			buf.value[0]    = 0;
@@ -235,7 +240,7 @@ int mxm_send_command(struct max1187x_touchscreen * ts, enum mxm_command cmd)
 
 static void handle_system_status(struct max1187x_touchscreen * ts, struct mxm_system_status * status)
 {
-	if (status->value != ts->system.status)
+	//if (status->value != ts->system.status)
 		dev_info(&(ts->i2c.client->dev), "system status: 0x%04X -> 0x%04X\n",
 			ts->system.status, status->value);
 	ts->system.status = status->value;
@@ -243,7 +248,7 @@ static void handle_system_status(struct max1187x_touchscreen * ts, struct mxm_sy
 
 static void handle_power_mode(struct max1187x_touchscreen * ts, struct mxm_power_mode * pwr)
 {
-	if (pwr->value != ts->system.power_mode)
+	//if (pwr->value != ts->system.power_mode)
 		dev_info(&(ts->i2c.client->dev), "power mode: 0x%04X -> 0x%04X\n",
 			ts->system.power_mode, pwr->value);
 	ts->system.power_mode = pwr->value;
@@ -300,6 +305,7 @@ static void handle_touch(struct max1187x_touchscreen * ts, struct mxm_touch_info
   			tool_type = MT_TOOL_PEN;
   			break;
   		case MXM_TOOL_GLOVE:
+				continue;
   		case MXM_TOOL_FINGER:
   		  tool_type = MT_TOOL_FINGER;
   			break;

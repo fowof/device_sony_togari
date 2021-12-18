@@ -1,4 +1,4 @@
-/* include/linux/input/max1187x_msg.h
+/* drivers/input/touchscreen/max1187x_msg.h
  *
  * Copyright (c) 2013 Maxim Integrated Products, Inc.
  * Copyright (c) 2013-2014 Sony Mobile Communications AB.
@@ -21,7 +21,9 @@
 #ifndef __MAX1187X_MSG_H
 #define __MAX1187X_MSG_H
 
-#include "max1187x.h"
+#include <linux/types.h>
+
+#include "max1187x_ts.h"
 
 #define MXM_OFFSET_CMD       0x0000
 #define MXM_OFFSET_RPT       0x000A
@@ -36,13 +38,13 @@ struct mxm_packet_header {
 	u16 len:8;    // payload length
 	u16 seq:4;		// sequence number in segments
 	u16 segs:4;   // total segments
-};
+}; // 1 ward
 
-struct mxm_packet {
+struct mxm_packet_buffer {
 	u16 offset;
 	struct mxm_packet_header hdr;
 	u16 payload[255];
-};
+}; // 257 words
 
 struct mxm_message_header {
   u16 id;
@@ -172,19 +174,20 @@ enum mxm_command {
 	MXM_CMD_SET_TOUCH_REPORT_EXTENDED,
 	MXM_CMD_AUTO_ACTIVE,
 	MXM_CMD_SLEEP,
-	MXM_CMD_RESET,
+	MXM_CMD_RESET_SYSTEM,
+	MXM_CMD_RESET_BASELINE,
 	MXM_CMD_ENABLE_GLOVE,
 	MXM_CMD_DISABLE_GLOVE,
 	MXM_CMD_MAX,
 };
 
-struct max1187x_touchscreen;
+// struct max1187x_touchscreen;
 
 int mxm_read_packet(struct max1187x_touchscreen *ts,
-	struct mxm_packet * pkt);
+	struct mxm_packet_buffer * pkt);
 
 int mxm_send_packet(struct max1187x_touchscreen *ts,
-	struct mxm_packet *pkt);
+	struct mxm_packet_buffer *pkt);
 
 int mxm_send_command(struct max1187x_touchscreen * ts,
   enum mxm_command cmd);

@@ -1,4 +1,4 @@
-/* include/linux/input/max1187x.h
+/* drivers/input/touchscreen/max1187x_ts.h
  *
  * Copyright (c) 2013 Maxim Integrated Products, Inc.
  * Copyright (c) 2013-2014 Sony Mobile Communications AB.
@@ -18,20 +18,21 @@
  *
  */
 
-#ifndef __MAX1187X_H
-#define __MAX1187X_H
+#ifndef __MAX1187X_TS_H
+#define __MAX1187X_TS_H
 
 #include <linux/i2c.h>
 #include <linux/input.h>
 #include <linux/mutex.h>
 #include <linux/regulator/consumer.h>
+#include <linux/types.h>
 #include <linux/wait.h>
+
+#include <linux/input/max1187x.h>
 
 #ifdef CONFIG_FB
 #include <linux/notifier.h>
 #endif
-
-#define MAX1187X_NAME             "max1187x"
 
 #define MXM_TOUCH_COUNT_MAX             10
 
@@ -50,30 +51,6 @@
 #define MXM_PWR_SET_WAIT_MS            100
 #define MXM_CHIP_RESET_US             6000
 #define MXM_RPT_WAIT_TICKS        (HZ >> 2)
-
-struct max1187x_pdata {
-	char *vdd_supply_name;
-
-	u32	gpio_tirq;
-	u32	gpio_reset;
-	u32	gpio_reset_l2h;
-
-	u32	lcd_x;
-	u32	lcd_y;
-
-	u32	num_sensor_x;
-	u32	num_sensor_y;
-
-  u32 swap_xy;
-	u32 reverse_x;
-	u32 reverse_y;
-
-	u32	report_type;
-	u32	report_pressure;
-	u32	report_size;
-	u32 ignore_pen;
-	u32	enable_glove;
-};
 
 struct max1187x_touchscreen {
 	struct max1187x_pdata *pdata;
@@ -127,4 +104,4 @@ struct max1187x_touchscreen {
 	u16 framecounter;
 };
 
-#endif /* __MAX1187X_H */
+#endif /* __MAX1187X_TS_H */
