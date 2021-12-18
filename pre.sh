@@ -27,7 +27,12 @@ cd "${_DIR_REPOROOT}"
 # COPY FILES
 #
 
-for file in $(find ${_DIR_DEVICE}/repocopy -type f)
+for src in $(find ${_DIR_DEVICE}/repocopy -type f)
 do
-  cp $file ${file#${_DIR_DEVICE}/repocopy/}
+  dst="${src#${_DIR_DEVICE}/repocopy/}"
+  if [ -s "$src" ]; then
+    cp "$src" "$dst"
+  else
+    rm "$dst"
+  fi
 done
