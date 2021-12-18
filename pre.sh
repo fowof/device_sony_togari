@@ -22,17 +22,3 @@ git fetch http://gerrit.aicp-rom.com/AICP/device_sony_msm8974-common refs/change
 cd "${_DIR_REPOROOT}/device/sony/rhine-common"
 git fetch http://gerrit.aicp-rom.com/AICP/device_sony_rhine-common refs/changes/31/109531/5 && git checkout FETCH_HEAD
 cd "${_DIR_REPOROOT}"
-
-#
-# COPY FILES
-#
-
-for src in $(find ${_DIR_DEVICE}/repocopy -type f)
-do
-  dst="${src#${_DIR_DEVICE}/repocopy/}"
-  if [ -s "$src" ]; then
-    cp "$src" "$dst"
-  else
-    rm "$dst"
-  fi
-done
