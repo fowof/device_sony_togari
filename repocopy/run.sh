@@ -7,7 +7,7 @@ _DIR_REPOROOT="$(cd "$_DIR_DEVICE"; cd ../../../; pwd)"
 _DIR_DEVICE=${_DIR_DEVICE#$_DIR_REPOROOT}
 _DIR_DEVICE=${_DIR_DEVICE#/}
 
-for src in $(find ${_DIR_DEVICE}/repocopy -type f -mindepth 2)
+for src in $(find "${_DIR_DEVICE}/repocopy" -mindepth 2 -type f)
 do
   dst="${src#${_DIR_DEVICE}/repocopy/}"
   if [ -s "$src" ]; then
