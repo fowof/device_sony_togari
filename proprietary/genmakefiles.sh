@@ -48,7 +48,8 @@ EOF
 for subdir in $(ls)
 do
 
-  [ -d "$subdir" ] || continue
+  [ -d "$subdir"              ] || continue
+  [ "${subdir#_}" = "$subdir" ] || continue
 
   cd "$subdir"
 
