@@ -26,6 +26,7 @@ TARGET_OTA_ASSERT_DEVICE := C6802,C6806,C6833,C6843,togari
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/togari/bluetooth
 
 # Kernel properties
+TARGET_KERNEL_SOURCE := kernel/sony/togari
 TARGET_KERNEL_CONFIG := lineageos_rhine_togari_row_defconfig
 
 # Partition information
